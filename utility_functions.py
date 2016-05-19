@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 #from collections import Counter
 from collections import Counter
@@ -36,6 +36,19 @@ def read_data(dataset="twitter", delim=","):
         df = pd.read_csv(file_input,delimiter=delim,header=0)        
         return df
 
+def save_pairwise_rels(file_loc,g,print_option=True):
+    f = open(file_loc,'w')
+    nodes = g.nodes()
+    for n1 in nodes:
+        for n2 in nodes:
+            if n1 is not n2:
+                l = g.get_edge_data(n1,n2)
+                if l:
+                    line = str(n1) + "\t" + str(n2) + "\t" + str(l) + "\n"
+                    f.write(line)
+                    if print_option:
+                        print n1,n2,l    
+    f.close()
 def plot_argument_graph(g):
     A = nx.nx_agraph.to_agraph(g)
     A.layout('dot', args='-Nfontsize=10 -Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
@@ -81,7 +94,7 @@ def print_relations(rels):
         print "No extraction."
         return
     for ind,r in enumerate(rels):
-        print "> Extraction Number: ",ind+1, " - ", "Pattern: ", r["pattern"],"relation : ( ", r["arg1"], ", ", r["rel"], ", ", r["arg2"] ," )"
+        print ">Extraction Number: ",ind+1, " - ", "Pattern: ", r["type"]," - relation : (", r["arg1"], ", ", r["rel"], ", ", r["arg2"] ,")"
     print " -------------------------------- \n"
 
 def get_rels_str(rels):
@@ -109,7 +122,47 @@ def print_top_relations(all_rels,top_num=-1):
     else:
         print "top ", top_num, " frequent relations:"
         for letter,count in cnt.most_common(top_num):
-            print letter, ": ", count        
+            print letter, ": ", count     
+            
+def error_msg(error_type):
+    if error_type == "tokenizer":
+        return "Tokenizer failed during parsing, Ex. there might be a dash in the sentence!"
+    
+    
+def get_entity_versions(dataset=DATA_SET):
+    entity_versions = defaultdict(list)
+    if dataset=="mothering":
+        entity_versions['parents'] = ['parents', 'parent', 'i', 'we' , 'us', 'you']
+        entity_versions['children'] = ['child', 'kid', 'kids', 'children', 'daughter', 'daughters',
+                                       'son', 'sons', 'toddler',
+                                       'toddlers', 'kiddo', 'boy','dd','ds']
+        entity_versions['medical prof'] = ['doctor', 'doctors', 'pediatrician', 
+                                           'pediatricians', 'nurse', 'nurses', 'ped', 'md', 'dr']
+        entity_versions['government'] = ['government', 'cdc', 'federal', 'feds',
+                                         'center for disease control', 'officials',
+                                         'politician', 'official', 'law']
+        entity_versions['religous inst'] = ['faith', 'religion', 'pastor', 'pastors',
+                                            'parish', 'parishes', 'church', 'churches',
+                                            'congregation', 'congregations', 'clergy']
+        entity_versions['schools'] = ['teacher', 'teachers', 'preschools', 'preschool', 
+                                      'school', 'schools', 'class', 
+                                      'daycare', 'daycares', 'classes']
+        entity_versions['vaccines'] = ['vaccines', 'vax', 'vaccine', 'vaccination', 
+                                       'vaccinations', 'shots', 'shot', 'vaxed',
+                                       'unvax', 'unvaxed', 'nonvaxed', 'vaccinate',
+                                       'vaccinated', 'vaxes', 'vaxing', 'vaccinating',
+                                       'substances', 'ingredients']
+        entity_versions['exemptions'] = ['exemption', 'exempt']
+        entity_versions['VPDs'] = ['varicella', 'chickenpox', 
+                                   'flu', 'whooping cough', 'tetanus', 'pertussis', 
+                                   'hepatitis', 'polio', 'mumps', 'measles', 'diphtheria']
+        entity_versions['adverse effects'] = ['autism', 'autistic', 'fever', 'fevers',
+                                              'reaction', 'reactions', 'infection', 'infections', 'inflammation', 'inflammations',
+                                              'pain', 'pains', 'bleeding', 'bruising', 'diarrhea', 'diarrhoea']
+
+    return entity_versions
+        
+    
 
 
 # In[ ]:
