@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[15]:
+# In[ ]:
 
 import time # to calculate the annotation time
 import re # regular expression
@@ -19,6 +19,7 @@ from networkx.drawing.nx_agraph import write_dot
 import sys
 from nltk.tokenize import sent_tokenize
 from nltk.stem import SnowballStemmer
+import nltk
 import numpy as np
 from collections import defaultdict
 
@@ -30,18 +31,21 @@ except ImportError:
 get_ipython().magic(u'matplotlib inline')
 
 #import the other functions
-get_ipython().magic(u"run -i 'main_functions'")
-get_ipython().magic(u"run -i 'utility_functions'")
-get_ipython().magic(u"run -i 'parameters'")
+get_ipython().magic(u"run -i 'main_functions.ipynb'")
+get_ipython().magic(u"run -i 'utility_functions.ipynb'")
+get_ipython().magic(u"run -i 'parameters.ipynb'")
 
 SEPARATE_SENT = True
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
-NODE_SELECTION = False
+NODE_SELECTION = True
 MAX_ITERATION = -1 #-1 -> to try all
 SAVE_GEFX = True
 SAVE_PAIRWISE_RELS = True
 SAVE_ALL_RELS = True
+
+
+nltk.data.path.append("/media/data5/behnam/nltk_data");
 
 annotator = Annotator()
 
@@ -74,7 +78,7 @@ for ind, t_orig in enumerate(texts):
         t_orig = t_orig.replace("-"," ")
         t_sentences = sent_tokenize(t_orig)
     except:
-        print "Error in sentence tokenizer!"
+        print "Error in sentence tokenizer! - ", t_orig
     #print "number of sentences: ", len(t_sentences)
     for t in t_sentences:
         try:
@@ -94,7 +98,7 @@ for ind, t_orig in enumerate(texts):
         rels_pure, rels_simp = get_relations(g_dir, t_annotated, option="SVO")
         rels = rels_pure#rels_simp
         if SHOW_REL_EXTRACTIONS:
-            print ind, t_orig, "\n"
+            print ind, t, "\n"
             print "Simplifided Version:"
             print_relations(rels)
             print "More detailed Version:"
@@ -174,10 +178,10 @@ if SAVE_PAIRWISE_RELS:
 df_rels_selected
 
 
-# In[30]:
+# In[6]:
 
 #t_orig = "Fortunately MN does not have a complicated exemption process when you do need one : If a notarized statement signed by the minor child 's parent or by the emancipated person is submitted to the person having supervision of the school or child care facility stating that the person has not been immunized as prescribed because of the conscientiously held beliefs of the parent of the minor child or of the emancipated person , the immunizations specified in the statement shall not be required ."
-t_orig = "my kids are happy."# and we just submitted a religious exemption to the school she will be attending this fall ."#"The principal opposition parties boycotted the polls after accusations of vote-rigging , and the only other name on the ballot was a little-known challenger from a marginal political party."
+t_orig = "I 'd have to put it on my own words though or I d never remember what to say ~ laughs ~ ... how about...  Although vaccinations are required by law to attend school , there are simple , legal , ways to exempt your child from that requirement... in Colorado you can get an exemption for medical , religious , or even philisophical reasons .# and we just submitted a religious exemption to the school she will be attending this fall ."#"The principal opposition parties boycotted the polls after accusations of vote-rigging , and the only other name on the ballot was a little-known challenger from a marginal political party."
 t_orig = t_orig.replace("-"," ")
 t_sentences = sent_tokenize(t_orig)
 for t in t_sentences:
