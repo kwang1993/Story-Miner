@@ -50,6 +50,9 @@ nltk.data.path.append("/media/data5/behnam/nltk_data");
 annotator = Annotator()
 
 
+f_rel = open("relations_" + MAX_ITERATION +".txt", "w")
+
+
 
 '''
 A few sample test cases:
@@ -113,6 +116,7 @@ for ind, t_orig in enumerate(texts):
             output_row["original_text"] = t_orig
             output_row["sentence"] = t
             output.append(output_row)
+            f_rel.write(output)
 
 
 end_time = time.time()
