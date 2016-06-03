@@ -174,10 +174,13 @@ if SAVE_PAIRWISE_RELS:
 df_rels_selected
 
 
-# In[30]:
+# In[4]:
 
 #t_orig = "Fortunately MN does not have a complicated exemption process when you do need one : If a notarized statement signed by the minor child 's parent or by the emancipated person is submitted to the person having supervision of the school or child care facility stating that the person has not been immunized as prescribed because of the conscientiously held beliefs of the parent of the minor child or of the emancipated person , the immunizations specified in the statement shall not be required ."
-t_orig = "my kids are happy."# and we just submitted a religious exemption to the school she will be attending this fall ."#"The principal opposition parties boycotted the polls after accusations of vote-rigging , and the only other name on the ballot was a little-known challenger from a marginal political party."
+from nltk.tokenize import sent_tokenize
+from practnlptools.tools import Annotator
+annotator = Annotator()
+t_orig = "OUR RELIGION FORBIDS INJECTIONS AND WE WILL SUE YOU IF YOU DO NOT RESPECT THAT."# and we just submitted a religious exemption to the school she will be attending this fall ."#"The principal opposition parties boycotted the polls after accusations of vote-rigging , and the only other name on the ballot was a little-known challenger from a marginal political party."
 t_orig = t_orig.replace("-"," ")
 t_sentences = sent_tokenize(t_orig)
 for t in t_sentences:

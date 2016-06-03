@@ -347,9 +347,10 @@ def get_simp_df(df,entity_versions):
         # lower case the letters
         arg1_new = glob_version(row['arg1'],entity_versions)
         arg2_new = glob_version(row['arg2'],entity_versions)
-        row['arg1'] = arg1_new
-        row['arg2'] = arg2_new
-        
+        #row['arg1'] = arg1_new
+        #row['arg2'] = arg2_new
+        df.loc[index,'arg1'] = arg1_new
+        df.loc[index,'arg2'] = arg2_new    
     return df
 
 
