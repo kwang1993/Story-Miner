@@ -1,16 +1,13 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[3]:
 
 #from collections import Counter
 from collections import Counter
 
-def read_data(dataset="twitter", delim=","):
-    if dataset == "twitter":
-        based_dir = '../data/Tweets/'
-        file_input_name = 'sample.csv'
-        file_input = based_dir + file_input_name        
+def read_data(file_input,dataset="twitter",delim=","):
+    if dataset == "twitter":      
         ff = open(file_input)
         h = ff.readline()
         header_orig = h.split(delim)
@@ -27,13 +24,10 @@ def read_data(dataset="twitter", delim=","):
         print len(df_selected.index)
         #print " selected dataframe - index 0 : ", df_selected.iloc[0]
         return df_selected
-    if dataset == "mothering":
-        based_dir = '../data/Vaccination/'
-        file_input_name = 'sent_cdb_child_exemption.txt'
-        file_input = based_dir + file_input_name    
+    if dataset == "mothering": 
         ff = open(file_input)
         delim='\n'
-        df = pd.read_csv(file_input,delimiter=delim,header=0)        
+        df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)        
         return df
 
 def save_pairwise_rels(file_loc,g,print_option=True):

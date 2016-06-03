@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[6]:
+# In[2]:
 
 def word_to_node_id(word, annotation):
     if word == "ROOT":
