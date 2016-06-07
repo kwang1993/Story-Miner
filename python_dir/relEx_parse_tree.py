@@ -1,11 +1,12 @@
 from init import *
-
+import sys
+import os
 
 SEPARATE_SENT = True
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
 NODE_SELECTION = True
-MAX_ITERATION = 40 #-1 -> to try all
+MAX_ITERATION = 0 #-1 -> to try all
 SAVE_GEFX = True
 SAVE_PAIRWISE_RELS = True
 SAVE_ALL_RELS = True
@@ -16,8 +17,18 @@ SAVE_ALL_RELS = True
 annotator = Annotator()
 
 data_dir = "../../data/"
+file_input_arg = str(sys.argv[1])
+output_dir_arg = str(sys.argv[2])
 
-f_rel = open(data_dir+"relations_" + str(MAX_ITERATION) +".csv", "w")
+print file_input_arg
+print output_dir_arg
+
+input_fname = os.path.basename(file_input_arg)
+input_fname = str(input_fname.split(".")[0])
+
+print " done"
+
+f_rel = open(output_dir_arg+input_fname+"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
 
 header = ['original_text', 'sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos']
 dict_writer = csv.DictWriter(f_rel, header)
@@ -39,12 +50,12 @@ if DATA_SET == "twitter":
     
 elif DATA_SET == "mothering":
     based_dir = data_dir + 'Vaccination/'
-    #file_input_name = 'sents.txt'
-    file_input_name = 'sent_cdb_child_exemption.txt'
-    file_input = based_dir + file_input_name      
-    df = read_data(file_input,"mothering","\n")#read the input sentences
+    file_input_name = 'sents.txt'
+    #file_input_name = 'sent_cdb_child_exemption.txt'
+    file_input = based_dir + file_input_name
+    # file_input is extra - should be removed later
+    df = read_data(file_input_arg,"mothering","\n")#read the input sentences
     texts = df['text'].tolist()
-
 
 
 
@@ -130,7 +141,7 @@ print df_output
 
 if SAVE_ALL_RELS:
     columns = ['original_text', 'sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos']
-    df_output.to_csv(data_dir + "output_relations.csv",sep=',', encoding='utf-8',header=True, columns=columns)
+    df_output.to_csv(output_dir_arg + input_fname + "_" + "output_relations.csv",sep=',', encoding='utf-8',header=True, columns=columns)
     #save_df_rels(df_rels)
 if NODE_SELECTION:
     # get the list of different versions of an entity. Example : parents,parent,i,we -> parents
@@ -140,20 +151,23 @@ if NODE_SELECTION:
     df_rels_selected = filter_nodes(df_simp.copy(),source='arg1',target='arg2',selected_nodes = selected_nodes)
     g_arg = create_argument_multiGraph(df_rels_selected.copy(),source='arg1',target='arg2',edge_attr = 'rel')
     if SAVE_GEFX:
-        nx.write_gexf(g_arg, "../../gephi_data/g_arg_selected_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
+        nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_selected_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
     plot_argument_graph(g_arg)
     if SAVE_PAIRWISE_RELS:
-        file_loc = data_dir + "pairwise_rels_selected_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
+        file_loc = output_dir_arg + input_fname + "_" + "pairwise_rels_selected_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
         save_pairwise_rels(file_loc,g_arg,print_option=True)      
 
 g_arg = create_argument_multiGraph(df_rels.copy(),source='arg1',target='arg2',edge_attr = 'rel')
 if SAVE_GEFX:
-    nx.write_gexf(g_arg, "../../gephi_data/g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
+    nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
 plot_argument_graph(g_arg)
 if SAVE_PAIRWISE_RELS:
-    file_loc = data_dir + "pairwise_rels_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
+    file_loc = output_dir_arg + input_fname + "_"  + "pairwise_rels_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
     save_pairwise_rels(file_loc,g_arg,print_option=True)    
     
+#if __name__ == "__main__":
+#    main(sys.argv[1:])
+
 
 '''
 # In[68]:
