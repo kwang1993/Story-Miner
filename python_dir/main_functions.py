@@ -161,6 +161,7 @@ def dp_str_to_node_id(w_ind_str,pos):
     
 
 def create_dep_graph(annotation):
+    print " in create_dep_graph function and this is the annotation: ", annotation
     dep_parse = annotation['dep_parse']
     if dep_parse == '':
         return None

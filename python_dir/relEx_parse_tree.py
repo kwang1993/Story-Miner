@@ -6,7 +6,7 @@ SEPARATE_SENT = True
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
 NODE_SELECTION = True
-MAX_ITERATION = 0 #-1 -> to try all
+MAX_ITERATION = -1 #-1 -> to try all
 SAVE_GEFX = True
 SAVE_PAIRWISE_RELS = True
 SAVE_ALL_RELS = True
@@ -20,13 +20,10 @@ data_dir = "../../data/"
 file_input_arg = str(sys.argv[1])
 output_dir_arg = str(sys.argv[2])
 
-print file_input_arg
-print output_dir_arg
 
 input_fname = os.path.basename(file_input_arg)
 input_fname = str(input_fname.split(".")[0])
 
-print " done"
 
 f_rel = open(output_dir_arg+input_fname+"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
 
@@ -56,6 +53,8 @@ elif DATA_SET == "mothering":
     # file_input is extra - should be removed later
     df = read_data(file_input_arg,"mothering","\n")#read the input sentences
     texts = df['text'].tolist()
+    print len(texts)
+    print texts[0:1]
 
 
 
@@ -94,17 +93,17 @@ for ind, t_orig in enumerate(texts):
         except:
             print "Error in sentence annotation"
             continue
-        #try:
-        g_dir = create_dep_graph(t_annotated)
-        if g_dir is None:
-            print "No extraction found"
+        try:
+            g_dir = create_dep_graph(t_annotated)
+            if g_dir is None:
+                print "No extraction found"
+                continue
+            if SHOW_DP_PLOTS:
+                plot_dep(g_dir,t)
+            g_undir = g_dir.to_undirected()
+        except:
+            print "Unexpected error while extracting relations:", sys.exc_info()[0]
             continue
-        if SHOW_DP_PLOTS:
-            plot_dep(g_dir,t)
-        g_undir = g_dir.to_undirected()
-        #except:
-        #print "Unexpected error while extracting relations:", sys.exc_info()[0]
-        #    continue
         rels_pure, rels_simp = get_relations(g_dir, t_annotated, option="SVO")
         rels = rels_pure#rels_simp
         if SHOW_REL_EXTRACTIONS:
@@ -143,6 +142,8 @@ if SAVE_ALL_RELS:
     columns = ['original_text', 'sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos']
     df_output.to_csv(output_dir_arg + input_fname + "_" + "output_relations.csv",sep=',', encoding='utf-8',header=True, columns=columns)
     #save_df_rels(df_rels)
+
+'''
 if NODE_SELECTION:
     # get the list of different versions of an entity. Example : parents,parent,i,we -> parents
     entity_versions = get_entity_versions(DATA_SET)    
@@ -167,7 +168,7 @@ if SAVE_PAIRWISE_RELS:
     
 #if __name__ == "__main__":
 #    main(sys.argv[1:])
-
+'''
 
 '''
 # In[68]:

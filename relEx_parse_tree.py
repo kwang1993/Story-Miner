@@ -45,7 +45,8 @@ SAVE_PAIRWISE_RELS = True
 SAVE_ALL_RELS = True
 
 
-nltk.data.path.append("/media/data5/behnam/nltk_data");
+#nltk.data.path.append("/media/data5/behnam/nltk_data");
+nltk.data.path.append("/u/home/b/bshahbaz/nltk_data");
 
 annotator = Annotator()
 

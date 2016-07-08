@@ -1,8 +1,10 @@
 #!/bin/bash
-#$ -l h_data=4G,h_rt=11:00:00
+#$ -l h_data=8G,h_rt=11:00:00
+#$ -pe shared 4
 #$ -o $HOME/job_output.txt
 #$ -e $HOME/job_errors.txt
-#$ -t 1-2:1
+#$ -t 1-50:1
+
 . /u/local/Modules/default/init/modules.sh
 
 dataset="Vaccination/mothering_chunks"
@@ -22,10 +24,10 @@ outputFile3="$outdir/"
 outputFile4="$outdir/"
 
 module load python/2.7
-nohup python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile1 $outputFile1 &
-nohup python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile2 $outputFile2 &
-nohup python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile3 $outputFile3 &
-nohup python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile4 $outputFile4 &
+python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile1 $outputFile1 
+python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile2 $outputFile2 
+python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile3 $outputFile3
+python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile4 $outputFile4
 
-echo "Tasks $((4*${SGE_TASK_ID}-3))-$((4*${SGE_TASK_ID})) started."
+echo "Tasks $((4*${SGE_TASK_ID}-3))-$((4*${SGE_TASK_ID})) finished."
 
