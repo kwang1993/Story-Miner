@@ -16,16 +16,13 @@ inputFile2="$projectDataDir/${dataset}/sents_$((4*${SGE_TASK_ID}-2)).txt"
 inputFile3="$projectDataDir/${dataset}/sents_$((4*${SGE_TASK_ID}-1)).txt"
 inputFile4="$projectDataDir/${dataset}/sents_$((4*${SGE_TASK_ID})).txt"
 
-outputFile1="$outdir/"
-outputFile2="$outdir/"
-outputFile3="$outdir/"
-outputFile4="$outdir/"
+outputDir="$outdir/"
 
 module load python/2.7
-nohup python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile1 $outputFile1 &
-nohup python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile2 $outputFile2 &
-nohup python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile3 $outputFile3 &
-nohup python $projectDir/re_behnam/python_dir/relEx_parse_tree.py $inputFile4 $outputFile4 &
+python $projectDir/re_behnam/final_version_relex/relEx_parse_tree.py $inputFile1 $outputDir &
+python $projectDir/re_behnam/final_version_relex/relEx_parse_tree.py $inputFile2 $outputDir &
+python $projectDir/re_behnam/final_version_relex/relEx_parse_tree.py $inputFile3 $outputDir &
+python $projectDir/re_behnam/final_version_relex/relEx_parse_tree.py $inputFile4 $outputDir &
 
 echo "Tasks $((4*${SGE_TASK_ID}-3))-$((4*${SGE_TASK_ID})) started."
 
