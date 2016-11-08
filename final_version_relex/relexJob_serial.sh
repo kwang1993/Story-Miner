@@ -3,11 +3,11 @@
 #$ -pe shared 4
 #$ -o $HOME/job_output.txt
 #$ -e $HOME/job_errors.txt
-#$ -t 1-3:1
+#$ -t 1-4:1
 
 . /u/local/Modules/default/init/modules.sh
 
-dataset="Vaccination/mothering_chunks"
+dataset="Vaccination/mothering_chunks_sent_sep_clean"
 
 projectDataDir="$HOME/relation_extraction/data"
 projectDir="$HOME/relation_extraction"
@@ -24,10 +24,10 @@ outputFile3="$outdir/"
 outputFile4="$outdir/"
 
 module load python/2.7
-python $projectDir/re_behnam/final_version_relex/relEx_parse_tree.py $inputFile1 $outputFile1 
-python $projectDir/re_behnam/final_version_relex/relEx_parse_tree.py $inputFile2 $outputFile2 
-python $projectDir/re_behnam/final_version_relex/relEx_parse_tree.py $inputFile3 $outputFile3
-python $projectDir/re_behnam/final_version_relex/relEx_parse_tree.py $inputFile4 $outputFile4
+python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile1 $outputFile1 
+python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile2 $outputFile2 
+python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile3 $outputFile3
+python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile4 $outputFile4
 
 echo "Tasks $((4*${SGE_TASK_ID}-3))-$((4*${SGE_TASK_ID})) finished."
 

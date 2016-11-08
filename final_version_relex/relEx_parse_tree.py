@@ -4,14 +4,14 @@ from utility_functions import *
 import sys
 import os
 
-SEPARATE_SENT = True
+SEPARATE_SENT = False 
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
 NODE_SELECTION = True
 MAX_ITERATION = -1 #-1 -> to try all
 SAVE_GEFX = True
 SAVE_PAIRWISE_RELS = True
-SAVE_ALL_RELS = True 
+SAVE_ALL_RELS = False 
 CLEAN_SENTENCES = False
 
 
@@ -30,7 +30,7 @@ input_fname = str(input_fname.split(".")[0])
 
 f_rel = open(output_dir_arg+input_fname+"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
 
-header = ['original_text', 'sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos','arg1_prepositions', 'rel_prepositions', 'arg2_prepositions']
+header = ['sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos','arg1_prepositions', 'rel_prepositions', 'arg2_prepositions']
 dict_writer = csv.DictWriter(f_rel, header)
 dict_writer.writeheader()#writerow(header)
 
@@ -126,7 +126,7 @@ for ind, t_orig in enumerate(texts):
         for r in rels:
             output_row = defaultdict(list)
             output_row = r.copy()
-            output_row["original_text"] = t_orig
+            #output_row["original_text"] = t_orig
             output_row["sentence"] = t
             output.append(output_row)
             #print " output is : ", output
