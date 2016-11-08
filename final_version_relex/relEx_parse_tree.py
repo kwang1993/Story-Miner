@@ -12,6 +12,7 @@ MAX_ITERATION = -1 #-1 -> to try all
 SAVE_GEFX = True
 SAVE_PAIRWISE_RELS = True
 SAVE_ALL_RELS = True 
+CLEAN_SENTENCES = False
 
 
 #nltk.data.path.append("/media/data5/behnam/nltk_data");
@@ -84,9 +85,12 @@ for ind, t_orig in enumerate(texts):
             break
     t_sentences = []
     try:
-        t_orig = t_orig.replace("-",".")
-        t_orig = change_nt_to_not(t_orig)
-        t_sentences = sent_tokenize(t_orig)
+        if CLEAN_SENTENCES:
+            t_orig = clean_sent(t_orig)
+        if SEPARATE_SENT:
+            t_sentences = sent_tokenize(t_orig)
+        else:
+            t_sentences = [t_orig]
     except:
         print "Error in sentence tokenizer! - ", t_orig
     #print "number of sentences: ", len(t_sentences)

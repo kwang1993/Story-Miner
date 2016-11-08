@@ -156,8 +156,7 @@ def get_entity_versions(dataset="mothering"):
         
     
 def change_nt_to_not(sent):
-    sent = sent.replace(" can't ", " cannot ")
-    sent = sent.replace(" won't ", " will not ")
+    sent = sent.replace(" can't ", " cannot ").replace(" won't ", " will not ")
     res_sent = ""
     ind = 0
     while ind < len(sent):
@@ -172,14 +171,55 @@ def change_nt_to_not(sent):
         if ind == len(sent)-3 and c == "n" and sent[ind+1] == "'" and sent[ind+2] == "t":
             res_sent += " not"
             break
+        if ind == len(sent)-4 and c == "n" and sent[ind+1] == "'" and sent[ind+2] == "t":
+            res_sent += " not" + sent[ind+3]
+            break            
         if c == "n" and sent[ind+1] == "'" and sent[ind+2] == "t" and sent[ind+3] == " ":
             res_sent += " not "
             ind += 4
             continue
+        if c == "n" and sent[ind+1] == "'" and sent[ind+2] == "t" and sent[ind+3] == ".":
+            res_sent += " not."
+            ind += 4
+            continue            
         res_sent += c
         ind += 1
     return res_sent
-        
+
+def change_multi_dots_to_single_dot(sent):
+    ind = 0
+    res_sent = ""
+    while ind < len(sent):
+        c = sent[ind]
+        if c == ".":
+            res_sent += c
+            ind2 = ind
+            while ind2 < len(sent) and sent[ind2] == ".":
+                ind2 += 1
+            if ind2 < len(sent) and sent[ind2] != " ":
+                res_sent += " "
+            ind = ind2
+            
+        else:
+            ind += 1
+            res_sent += c
+    return res_sent
+            
+
+def clean_sent(sent):
+    '''
+    This function 
+            1. Replace - with .
+            2. Remove punctuations - except ".", ",", ":".
+            3. Change n't to not
+    '''
+    
+    sent = sent.replace("-",".")#.replace("(","").replace(")","")
+    exclude = set(string.punctuation) - {".",",",";", "!", "?"}
+    sent = ''.join(ch for ch in sent if ch not in exclude)    
+    sent = change_nt_to_not(sent)
+    sent = change_multi_dots_to_single_dot(sent)
+    return sent
            
 '''
 # In[ ]:
