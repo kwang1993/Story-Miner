@@ -1,5 +1,5 @@
 from init import *
-
+import string
 from collections import Counter
 #from collections import Counter
 #import pandas as pd
@@ -215,7 +215,7 @@ def clean_sent(sent):
     '''
     
     sent = sent.replace("-",".")#.replace("(","").replace(")","")
-    exclude = set(string.punctuation) - {".",",",";", "!", "?"}
+    exclude = set(string.punctuation) - {".",",",";", "!", "?", "'"}
     sent = ''.join(ch for ch in sent if ch not in exclude)    
     sent = change_nt_to_not(sent)
     sent = change_multi_dots_to_single_dot(sent)

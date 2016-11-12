@@ -24,7 +24,7 @@ for i in range(num_chunks):
     startInd = i*(num_lines/num_chunks)
     endInd = (i+1)*(num_lines/num_chunks)
     with open(output_file,"w") as f:
-        if i > 0:
-            f.write("text\n")
+        #if i > 0:
+        f.write("text\n")
         f.writelines(data[startInd:endInd])
 

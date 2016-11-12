@@ -21,6 +21,7 @@ from main_functions import *
 from utility_functions import *
 from collections import Counter
 import os
+import string
 
 try:
     from networkx.drawing.nx_agraph import graphviz_layout
