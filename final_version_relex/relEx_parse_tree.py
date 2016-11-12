@@ -27,6 +27,7 @@ output_dir_arg = str(sys.argv[2])
 input_fname = os.path.basename(file_input_arg)
 input_fname = str(input_fname.split(".")[0])
 
+print input_fname
 
 f_rel = open(output_dir_arg+input_fname+"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
 
@@ -146,7 +147,7 @@ df_output = pd.DataFrame(output)
 print df_output
 
 if SAVE_ALL_RELS:
-    columns = ['original_text', 'sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos']
+    columns = ['sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos']
     df_output.to_csv(output_dir_arg + input_fname + "_" + "output_relations.csv",sep=',', encoding='utf-8',header=True, columns=columns)
     #save_df_rels(df_rels)
 
