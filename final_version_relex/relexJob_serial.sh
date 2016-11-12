@@ -3,7 +3,7 @@
 #$ -pe shared 4
 #$ -o $HOME/job_output.txt
 #$ -e $HOME/job_errors.txt
-#$ -t 1-4:1
+#$ -t 1-50:1
 
 . /u/local/Modules/default/init/modules.sh
 
