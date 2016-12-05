@@ -8,7 +8,7 @@ SEPARATE_SENT = False
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
 NODE_SELECTION = True
-MAX_ITERATION = 10 #-1 -> to try all
+MAX_ITERATION = -1 #-1 -> to try all
 SAVE_GEFX = True
 SAVE_PAIRWISE_RELS = True
 SAVE_ALL_RELS = False 
@@ -151,7 +151,8 @@ if SAVE_ALL_RELS:
     df_output.to_csv(output_dir_arg + input_fname + "_" + "output_relations.csv",sep=',', encoding='utf-8',header=True, columns=columns)
     #save_df_rels(df_rels)
 
-'''
+
+#'''
 if NODE_SELECTION:
     # get the list of different versions of an entity. Example : parents,parent,i,we -> parents
     entity_versions = get_entity_versions(DATA_SET)    
@@ -176,7 +177,7 @@ if SAVE_PAIRWISE_RELS:
     
 #if __name__ == "__main__":
 #    main(sys.argv[1:])
-'''
+#'''
 
 '''
 # In[68]:
