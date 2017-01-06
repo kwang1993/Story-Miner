@@ -65,6 +65,7 @@ def create_file_writer_array(entity_versions, header):
     return file_writer
 
 def add_to_context_files(entity_versions, sent, line_to_store):
+    sent = sent.decode('utf-8')
     sent = sent.lower()
     words = nltk.word_tokenize(sent)
     entities = entity_versions.keys()
@@ -95,17 +96,19 @@ def add_to_context_files(entity_versions, sent, line_to_store):
 
 entity_versions = get_entity_versions("mothering")
 context_names = create_context_names(entity_versions)
-with open("../../data/Vaccination/mothering_chunks/res/rel_all_cat.csv") as f:
+#with open("../../data/Vaccination/mothering_chunks/res/rel_all_cat.csv") as f:
+with open("../../data/Vaccination/hoffman_output/exp_3_clean_sep/res_all_cat_clean.csv") as f:
     csv_reader = csv.reader(f, delimiter=',')
     for ind, line in enumerate(csv_reader):
         if ind == 0: #skip the header
-            file_writer = create_file_writer_array(entity_versions, line[1:6])
+            # 0: sent, 1,2,3 -> arg1,rel,arg2, 9,10,11 -> arg1,rel,arg2 prepositions
+            file_writer = create_file_writer_array(entity_versions, [line[i] for i in [0,1,2,3,9,10,11]])
             continue
         else:
             try:
-                add_to_context_files(entity_versions, line[2], line[1:6])
+                add_to_context_files(entity_versions, line[0], [line[i] for i in [0,1,2,3,9,10,11]])
                 if ind % 10000 == 0 :
-                    print ind ,  "/" , "227660"
+                    print ind ,  "/" , "689391"#"227660"
             except:
                 print "Error in line : ", ind, "\n" , line, " \n --- \n " 
 

@@ -24,7 +24,7 @@ def read_data(file_input,dataset="twitter",delim=","):
         return df_selected
     if dataset == "mothering": 
         ff = open(file_input)
-        delim='\n'
+        #delim='\n'
         df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)        
         return df
 
