@@ -20,16 +20,18 @@ CLEAN_SENTENCES = False
 annotator = Annotator()
 
 data_dir = "../../data/"
-file_input_arg = str(sys.argv[1])
-output_dir_arg = str(sys.argv[2])
+##file_input_arg = str(sys.argv[1])
+##output_dir_arg = str(sys.argv[2])
+output_dir_arg = data_dir + 'Tweets/' + 'tweets_textOnly'
 
 
-input_fname = os.path.basename(file_input_arg)
-input_fname = str(input_fname.split(".")[0])
+##input_fname = os.path.basename(file_input_arg)
+##input_fname = str(input_fname.split(".")[0])
 
-print input_fname
+##print input_fname
 
-f_rel = open(output_dir_arg+input_fname+"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
+##f_rel = open(output_dir_arg+input_fname+"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
+f_rel = open(output_dir_arg+"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
 
 header = ['sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos','arg1_prepositions', 'rel_prepositions', 'arg2_prepositions']
 dict_writer = csv.DictWriter(f_rel, header)
@@ -39,15 +41,24 @@ dict_writer.writeheader()#writerow(header)
 '''
 PARAMETERS
 '''
-DATA_SET = "mothering"
+#DATA_SET = "mothering"
+DATA_SET = "sentence_only"
 texts = []
 
 if DATA_SET == "twitter":
     based_dir = data_dir+ 'Tweets/'
-    file_input_name = 'sample.csv'
+    file_input_name = 'tweets_textOnly_sample.txt'#'sample.csv'
     file_input = based_dir + file_input_name      
     df = read_data(file_input,"twitter",",")#read the input sentences
-    texts = df['main_tweet'].tolist()
+    texts = df['text'].tolist()
+    
+if DATA_SET == "sentence_only":
+    based_dir = data_dir+ 'Tweets/'
+    file_input_name = 'tweets_textOnly.txt'#'sample.csv'
+    file_input = based_dir + file_input_name      
+    df = read_data(file_input,"sentence_only","\n")#read the input sentences
+    texts = df['text'].tolist()  
+    print texts[0:2]
     
 elif DATA_SET == "mothering":
     based_dir = data_dir + 'Vaccination/'

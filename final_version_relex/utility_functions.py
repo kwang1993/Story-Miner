@@ -22,7 +22,9 @@ def read_data(file_input,dataset="twitter",delim=","):
         print len(df_selected.index)
         #print " selected dataframe - index 0 : ", df_selected.iloc[0]
         return df_selected
-    if dataset == "mothering": 
+    
+        
+    if dataset == "mothering" or dataset == "sentence_only": 
         ff = open(file_input)
         #delim='\n'
         df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)        
