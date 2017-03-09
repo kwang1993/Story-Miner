@@ -254,7 +254,7 @@ def get_simp_rel(rel, option = "SVO", dataset='mothering'):
     (I,You,We -> Parents)
     '''    
     if dataset == "mothering":
-        parent_list = ["i","you","we","us"]
+        parent_list = ["i","we","us"]#,"you"]
         if arg1 in parent_list:
             arg1 = "parent"
         if arg2 in parent_list:

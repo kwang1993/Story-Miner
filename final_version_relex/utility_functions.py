@@ -126,7 +126,7 @@ def error_msg(error_type):
 def get_entity_versions(dataset="mothering"):
     entity_versions = defaultdict(list)
     if dataset=="mothering":
-        entity_versions['parents'] = ['parents', 'parent', 'i', 'we' , 'us', 'you']
+        entity_versions['parents'] = ['parents', 'parent', 'i', 'we' , 'us']#, 'you']
         entity_versions['children'] = ['child', 'kid', 'kids', 'children', 'daughter', 'daughters',
                                        'son', 'sons', 'toddler',
                                        'toddlers', 'kiddo', 'boy','dd','ds']
