@@ -387,6 +387,10 @@ def filter_nodes(df,source,target, selected_nodes):
     df_filtered = df[np.logical_and(df[source].isin(selected_nodes), df[target].isin(selected_nodes))]
     return df_filtered
 
+def filter_nodes_OR(df,source,target, selected_nodes):
+    df_filtered = df[np.logical_or(df[source].isin(selected_nodes), df[target].isin(selected_nodes))]
+    return df_filtered
+
 def glob_version(entity, entity_versions):
     '''
     Extraction part -> arg or rel

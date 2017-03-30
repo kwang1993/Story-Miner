@@ -153,7 +153,22 @@ def get_entity_versions(dataset="mothering"):
         entity_versions['adverse effects'] = ['autism', 'autistic', 'fever', 'fevers',
                                               'reaction', 'reactions', 'infection', 'infections', 'inflammation', 'inflammations',
                                               'pain', 'pains', 'bleeding', 'bruising', 'diarrhea', 'diarrhoea']
-
+        
+    if dataset=="twitter":
+        entity_versions['ApplePay'] = ['apple pay', 'Apple Pay', 'apple Pay', 'Apple pay']
+        entity_versions['SamsungPay'] = ['samsung pay', 'Samsung pay', 'samsung Pay', 'Samsung Pay']
+        entity_versions['googlewallet'] = ['google wallet', 'Google wallet', 'google Wallet', 'Google Wallet']
+        entity_versions['MasterCard'] = ['master card', 'Master card', 'master Card', 'Master Card']
+        entity_versions['Barclaycard'] = ['barclay card', 'Barclay card', 'barclay Card', 'Barclay Card']
+        entity_versions['McDonalds'] = ['mc donalds', 'mc Donalds', 'Mc donalds', 'Mc Donalds']
+        entity_versions['riteaid'] = ['rite aid', 'rite Aid', 'Rite aid', 'Rite Aid']
+        entity_versions['Barclays'] = ['BarclaysUK', 'barclaysUK', 'barclaysUKHelp', 'Barclays', 'BarclaysUKhelp', 'BarclaysUKHelp', 'barclays', 'BarclaysBank']
+        entity_versions['HSBC'] = ['HSBC_UK_Press', 'HSBC_US', 'hsbc', 'HSBC_AUS_Press', 'HSBC_UK', 'HSBC_UK_Help', 'hsbc_uk', 'HSBC_AUS_Help', 'HSBC_Group', 'HSBC_US_Help', 'HSBC_NOW', 'HSBC']
+        entity_versions['PayPal'] = ['paypal', 'PayPalUK', 'PayPalDE', 'PaypalIN', 'AskPayPal', 'PayPal', 'Paypal']
+        entity_versions['YouTube'] = ['YouTube']
+        entity_versions['Amex'] = ['AskAmexUK', 'askamex', 'AskAmex', 'AmEx', 'amex', 'Amex', 'AskAmexAU', 'AmexAU', 'AmexUK']
+        entity_versions['Starbucks'] = ['starbucks', 'StarbucksRU', 'Starbucks', 'StarbucksUK']
+        
     return entity_versions
         
     
