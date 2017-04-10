@@ -1,7 +1,11 @@
+import sys
+sys.path.insert(0, './base-codes')
+sys.path.insert(0, './data-specific-codes')
+sys.path.insert(0, './utility-codes')
+
 from init import *
 from main_functions import *
 from utility_functions import *
-import sys
 import os
 
 SEPARATE_SENT = False 
@@ -15,6 +19,7 @@ SAVE_ALL_RELS = False
 CLEAN_SENTENCES = False
 
 
+#uncomment if run the code on starsky
 #nltk.data.path.append("/media/data5/behnam/nltk_data");
 
 annotator = Annotator()
@@ -72,20 +77,6 @@ elif DATA_SET == "mothering":
     #print texts[0:1]
 
 
-
-'''
-A few sample test cases:
-#texts = ["the Church told all Catholic parents not to let their child get the MMR."]
-#texts = ["Why Samsung Pay could gain an early lead in mobile payments."]
-#texts = ["You would keep your child 's shot records at home and NOT submit that to the school...only your exemption from all shots ."]
-#texts = ["Parents may use their philosophical beliefs exemption for ANY vaccine they choose to do so ; you may selectively vaccinate your child and exempt them out of other vaccines ; you may also exempt out of any and all vaccines and use your exemption that way , as well ."]
-#texts = ["Here is the Hawaii immunization brochure , which states the exemption forms can also be obtained from the school : Immunization and TB code : Surprisingly , I do n't see anything about religiously exempting a child from the TB screening requirement in the code ."]
-#texts.insert(0,"I like this product and I also like the other product.") ! Strange dep res -> prep_like
-#texts.insert(0,"A medical exemption is out of the question - you 'd have to first find a doctor willing to exempt your child from all shots - not going to happen - and then have the medical exemption renewed every year . ") -> tokenizer failure
-#texts.insert(0,"A state exemption is only to exempt a child from state requirements ; while in the states , the only time an exemption would come up is when using DODs schools or daycare in the states--the OP is going to Japan . ")
-#texts.insert(0,"Even if the Church told all Catholic parents not to let their child get the MMR for instance , most parents would have to still be required to submit a religous exemption which would exempt all vaccines .")
-'''
-#texts.insert(0,"He doesn't like to buy food.")
 all_rels_str = []
 all_rels = []
 output = []
