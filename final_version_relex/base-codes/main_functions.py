@@ -2,6 +2,7 @@ from init import *
 from utility_functions import *
 
 from collections import Counter
+import ast
 
 def word_to_node_id(word, annotation):
     if word == "ROOT":
@@ -216,7 +217,7 @@ def dp_str_to_node_id(w_ind_str,pos):
     
 
 def create_dep_graph(annotation):
-    print "\n\nIn create_dep_graph function and this is the annotation: ", annotation
+    #print "\n\nIn create_dep_graph function and this is the annotation: ", annotation
     dep_parse = annotation['dep_parse']
     if dep_parse == '':
         return None
@@ -420,7 +421,9 @@ def get_simp_df(df,entity_versions):
     return df
 
 
-def text_corpus_to_rels(texts,
+def text_corpus_to_rels(file_input_arg,
+                        DATA_SET,
+                        INPUT_DELIMITER,
                         input_fname,
                         output_dir_arg,
                         MAX_ITERATION,
@@ -429,13 +432,22 @@ def text_corpus_to_rels(texts,
                         SHOW_DP_PLOTS,
                         SHOW_REL_EXTRACTIONS,
                         SAVE_ALL_RELS,
-                        EXTRACT_NESTED_PREPOSITIONS_RELS):
+                        EXTRACT_NESTED_PREPOSITIONS_RELS,
+                        SAVE_ANNOTATIONS_TO_FILE,
+                        LOAD_ANNOTATIONS
+                       ):
     
+    df = read_data(file_input_arg, DATA_SET, INPUT_DELIMITER, LOAD_ANNOTATIONS)
+    texts = df['text'].tolist()
     
     output_prefix = output_dir_arg + input_fname
     f_rel = open(output_prefix +"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
+    
+    #f_input_plus_annotations = open(output_prefix +"_with_annotations" +".csv", "w")
 
     header = ['sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos','arg1_prepositions', 'rel_prepositions', 'arg2_prepositions']
+    if SAVE_ANNOTATIONS_TO_FILE:
+        header = header + ['annotation']
     dict_writer = csv.DictWriter(f_rel, header)
     dict_writer.writeheader()#writerow(header)    
     
@@ -449,9 +461,9 @@ def text_corpus_to_rels(texts,
                 break
         t_sentences = []
         try:
-            if CLEAN_SENTENCES:
+            if CLEAN_SENTENCES and not LOAD_ANNOTATIONS:
                 t_orig = clean_sent(t_orig)
-            if SEPARATE_SENT:
+            if SEPARATE_SENT and not LOAD_ANNOTATIONS:
                 t_sentences = sent_tokenize(t_orig)
             else:
                 t_sentences = [t_orig]
@@ -459,21 +471,28 @@ def text_corpus_to_rels(texts,
             print "Error in sentence tokenizer! - ", t_orig
         for t in t_sentences:
             #try:
-            t_annotated = annotator.getAnnotations(t, dep_parse=True)
+            if LOAD_ANNOTATIONS:
+                t_annotated = df.iloc[ind]["annotation"]
+                t_annotated = ast.literal_eval(t_annotated) 
+            else:
+                t_annotated = annotator.getAnnotations(t, dep_parse=True)
             #except:
             #    print "Error in sentence annotation"
             #    continue
-            try:
-                g_dir = create_dep_graph(t_annotated)
-                if g_dir is None:
-                    print "No extraction found"
-                    continue
-                if SHOW_DP_PLOTS:
-                    plot_dep(g_dir,t)
-                g_undir = g_dir.to_undirected()
-            except:
-                print "Unexpected error while extracting relations:", sys.exc_info()[0]
+            ##try:
+
+                       
+            print type(t_annotated)
+            g_dir = create_dep_graph(t_annotated)
+            if g_dir is None:
+                print "No extraction found"
                 continue
+            if SHOW_DP_PLOTS:
+                plot_dep(g_dir,t)
+            g_undir = g_dir.to_undirected()
+            #except:
+            #    print "Unexpected error while extracting relations:", sys.exc_info()[0]
+            #    continue
             rels_pure, rels_simp = get_relations(g_dir, t_annotated, EXTRACT_NESTED_PREPOSITIONS_RELS, option="SVO")
             rels = rels_pure#rels_simp
             if SHOW_REL_EXTRACTIONS:
@@ -491,6 +510,8 @@ def text_corpus_to_rels(texts,
                 output_row = r.copy()
                 #output_row["original_text"] = t_orig
                 output_row["sentence"] = t
+                if SAVE_ANNOTATIONS_TO_FILE:
+                    output_row["annotation"] = t_annotated
                 output.append(output_row)
                 #print " output is : ", output
                 #output_subset = dict((k,output[k]) for k in header)

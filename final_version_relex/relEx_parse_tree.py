@@ -14,16 +14,20 @@ PARAMETERS
 SEPARATE_SENT = False 
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
-NODE_SELECTION = True
-MAX_ITERATION = 4#-1 #-1 -> to try all
+NODE_SELECTION = False
+MAX_ITERATION = 4 #-1 -> to try all
 SAVE_GEFX = True
 SAVE_PAIRWISE_RELS = True
 SAVE_ALL_RELS = False 
 CLEAN_SENTENCES = False
 SET_INOUT_LOC_FROM_PYTHON_ARGS = False
-SHOW_ARGUMENT_GRAPH = True
+SHOW_ARGUMENT_GRAPH = False
 EXTRACT_NESTED_PREPOSITIONS_RELS = False
-DATA_SET = "sentence_only"
+DATA_SET = "twitter"
+INPUT_DELIMITER = ","
+SAVE_ANNOTATIONS_TO_FILE = True
+LOAD_ANNOTATIONS = True
+
 
 
 
@@ -37,15 +41,19 @@ if SET_INOUT_LOC_FROM_PYTHON_ARGS:
     input_fname = str(input_fname.split(".")[0])
     output_prefix = output_dir_arg + input_fname
 else:
-    input_fname = 'tweets_textOnly'
-    file_input_arg = data_dir + 'Tweets/' + 'tweets_textOnly_sample.txt'
-    output_dir_arg = data_dir + 'Tweets/'
+    if LOAD_ANNOTATIONS:
+        input_fname = 'sents_1_relations_4'#'sents_1'
+        file_input_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'+input_fname+'.csv'
+        output_dir_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'
+    else:
+        input_fname = 'sents_1'
+        file_input_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/hoffman_res/clean_tweets/sample/sents_1.csv'
+        output_dir_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'
+        
     
 
 
 #file_input = get_file_input(DATA_SET)
-df = read_data(file_input_arg, DATA_SET, "\n")
-texts = df['text'].tolist()
 
 
 all_rels_str = []
@@ -54,7 +62,9 @@ output = []
 
 start_time = time.time()
 
-all_rels_str, all_rels, output = text_corpus_to_rels(texts,
+all_rels_str, all_rels, output = text_corpus_to_rels(file_input_arg,
+                                                     DATA_SET,
+                                                     INPUT_DELIMITER,
                                                      input_fname,
                                                      output_dir_arg,
                                                      MAX_ITERATION,
@@ -63,16 +73,20 @@ all_rels_str, all_rels, output = text_corpus_to_rels(texts,
                                                      SHOW_DP_PLOTS,
                                                      SHOW_REL_EXTRACTIONS,
                                                      SAVE_ALL_RELS,
-                                                     EXTRACT_NESTED_PREPOSITIONS_RELS
+                                                     EXTRACT_NESTED_PREPOSITIONS_RELS,
+                                                     SAVE_ANNOTATIONS_TO_FILE,
+                                                     LOAD_ANNOTATIONS
                                                     )            
 end_time = time.time()
 print "Relation Extraction Time: ", end_time-start_time , "(seconds) - ", (end_time-start_time)/60, "(min)"
 print "***************STATISTICS***************"
-print "Total number of input records (posts): ", len(texts)
+#print "Total number of input records (posts): ", len(texts)
 print "Total number of extracted relations: ", len(all_rels_str)
 print_top_relations(all_rels_str,top_num=-1) 
 df_rels = pd.DataFrame(all_rels)
 df_output = pd.DataFrame(output)
+
+print df_rels
 
 rels_to_network(df_rels,
                 input_fname,

@@ -4,8 +4,8 @@ from collections import Counter
 #from collections import Counter
 #import pandas as pd
 
-def read_data(file_input,dataset="twitter",delim=","):
-    if dataset == "twitter":      
+def read_data(file_input,dataset="twitter",delim=",", LOAD_ANNOTATIONS=False):
+    if dataset == "twitter-v0":      
         ff = open(file_input)
         h = ff.readline()
         header_orig = h.split(delim)
@@ -29,6 +29,20 @@ def read_data(file_input,dataset="twitter",delim=","):
         #delim='\n'
         df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)        
         return df
+    
+    if dataset == "twitter":
+        #ff = open(file_input)
+        #h = ff.readline()
+        #header_orig = h.split(delim)
+        df = pd.read_csv(file_input,delimiter=delim, header=0, error_bad_lines=False)
+        if LOAD_ANNOTATIONS:
+            df_selected = df[['sentence', 'annotation']]
+            df_selected.columns = ['text', 'annotation']
+        else:
+            df_selected = df[['Replaced Version of Main Tweet']]
+            df_selected.columns = ['text']            
+        return df_selected
+    
 
 def get_file_input(DATA_SET):
     if DATA_SET == "twitter":
