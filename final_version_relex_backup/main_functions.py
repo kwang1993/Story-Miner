@@ -2,7 +2,6 @@ from init import *
 from utility_functions import *
 
 from collections import Counter
-import ast
 
 def word_to_node_id(word, annotation):
     if word == "ROOT":
@@ -37,7 +36,7 @@ def sort_word_ids(word_ids, head_word_ind):
     # removing the extra space at the end
     return word_sorted_str.strip(), word_with_pos_sorted_str.strip()
 
-def expand_rel(rel, g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS):
+def expand_rel(rel, g_dir, annotation):
     '''
     Expands arguments by adding extra related words, such as nn, amod, and so on. 
     Expands relations by adding extra related words, such as adverbs, and so on.
@@ -121,11 +120,10 @@ def expand_rel(rel, g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS):
     rel_expanded['rel_with_pos'] = rel_final_with_pos_str
     
 
-    if EXTRACT_NESTED_PREPOSITIONS_RELS:
-        expansion_list = arg_expand_list
-        rel_expanded['rel_prepositions'] = get_nested_preposition_rels(g_dir, r, expansion_list)
-        rel_expanded['arg1_prepositions'] = get_nested_preposition_rels(g_dir, arg1, expansion_list)
-        rel_expanded['arg2_prepositions'] = get_nested_preposition_rels(g_dir, arg2, expansion_list)
+    expansion_list = arg_expand_list
+    rel_expanded['rel_prepositions'] = get_nested_preposition_rels(g_dir, r, expansion_list)
+    rel_expanded['arg1_prepositions'] = get_nested_preposition_rels(g_dir, arg1, expansion_list)
+    rel_expanded['arg2_prepositions'] = get_nested_preposition_rels(g_dir, arg2, expansion_list)
     
     return rel_expanded
 
@@ -217,7 +215,7 @@ def dp_str_to_node_id(w_ind_str,pos):
     
 
 def create_dep_graph(annotation):
-    #print "\n\nIn create_dep_graph function and this is the annotation: ", annotation
+    print "\n\nIn create_dep_graph function and this is the annotation: ", annotation
     dep_parse = annotation['dep_parse']
     if dep_parse == '':
         return None
@@ -283,7 +281,7 @@ def get_simp_rel(rel, option = "SVO", dataset='mothering'):
 
 
 
-def get_relations(g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS, option="SVO"):
+def get_relations(g_dir, annotation, option="SVO"):
     relations = []
     '''
     Simplified relations:
@@ -315,7 +313,7 @@ def get_relations(g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS, option="S
                         rel["arg2"] = o#o.split("-")[0]
                         rel["type"] = option
                         rel["pattern"] = "(nsubj, verb, dobj)"
-                        rel_expanded = expand_rel(rel, g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS)
+                        rel_expanded = expand_rel(rel, g_dir, annotation)
                         #print rel_expanded
                         relations.append(rel_expanded.copy())
                         rel_simp = get_simp_rel(rel_expanded.copy(),option)
@@ -421,147 +419,6 @@ def get_simp_df(df,entity_versions):
     return df
 
 
-def text_corpus_to_rels(file_input_arg,
-                        DATA_SET,
-                        INPUT_DELIMITER,
-                        input_fname,
-                        output_dir_arg,
-                        MAX_ITERATION,
-                        CLEAN_SENTENCES,
-                        SEPARATE_SENT,
-                        SHOW_DP_PLOTS,
-                        SHOW_REL_EXTRACTIONS,
-                        SAVE_ALL_RELS,
-                        EXTRACT_NESTED_PREPOSITIONS_RELS,
-                        SAVE_ANNOTATIONS_TO_FILE,
-                        LOAD_ANNOTATIONS,
-                        KEEP_ORDER_OF_EXTRACTIONS
-                       ):
-    
-    df = read_data(file_input_arg, DATA_SET, INPUT_DELIMITER, LOAD_ANNOTATIONS)
-    texts = df['text'].tolist()
-    
-    output_prefix = output_dir_arg + input_fname
-    f_rel = open(output_prefix +"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
-    
-    #f_input_plus_annotations = open(output_prefix +"_with_annotations" +".csv", "w")
-
-    header = ['sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos','arg1_prepositions', 'rel_prepositions', 'arg2_prepositions']
-    if SAVE_ANNOTATIONS_TO_FILE:
-        header = header + ['annotation']
-    if KEEP_ORDER_OF_EXTRACTIONS:
-        header = ["post_num", "sentence_num"] + header
-    dict_writer = csv.DictWriter(f_rel, header)
-    dict_writer.writeheader()#writerow(header)    
-    
-    annotator = Annotator()
-    all_rels_str = []
-    all_rels = []
-    output = []
-    for ind, t_orig in enumerate(texts):
-        if MAX_ITERATION >= 0:
-            if ind > MAX_ITERATION:
-                break
-        t_sentences = []
-        try:
-            if CLEAN_SENTENCES and not LOAD_ANNOTATIONS:
-                t_orig = clean_sent(t_orig)
-            if SEPARATE_SENT and not LOAD_ANNOTATIONS:
-                t_sentences = sent_tokenize(t_orig)
-            else:
-                t_sentences = [t_orig]
-        except:
-            print "Error in sentence tokenizer! - ", t_orig
-        for t_ind, t in enumerate(t_sentences):
-            try:
-                if LOAD_ANNOTATIONS:
-                    t_annotated = df.iloc[ind]["annotation"]
-                    t_annotated = ast.literal_eval(t_annotated) 
-                else:
-                    t_annotated = annotator.getAnnotations(t, dep_parse=True)
-            except:
-                print "Error in sentence annotation"
-                continue
-            try:
-
-                       
-                #print type(t_annotated)
-                g_dir = create_dep_graph(t_annotated)
-                if g_dir is None:
-                    print "No extraction found"
-                    continue
-                if SHOW_DP_PLOTS:
-                    plot_dep(g_dir,t)
-                g_undir = g_dir.to_undirected()
-            except:
-                print "Unexpected error while extracting relations:", sys.exc_info()[0]
-                continue
-            rels_pure, rels_simp = get_relations(g_dir, t_annotated, EXTRACT_NESTED_PREPOSITIONS_RELS, option="SVO")
-            rels = rels_pure#rels_simp
-            if SHOW_REL_EXTRACTIONS:
-                print ind, t, "\n"
-                print "Simplifided Version:"
-                print_relations(rels)
-                print "More detailed Version:"
-                print_relations(rels_pure)
-            else:
-                print ind,
-            all_rels_str = all_rels_str + get_rels_str(rels) #For simply counting the exact strings
-            all_rels = all_rels + rels # to later create a dataframe
-            for r in rels:
-                output_row = defaultdict(list)
-                output_row = r.copy()
-                #output_row["original_text"] = t_orig
-                output_row["sentence"] = t
-                if SAVE_ANNOTATIONS_TO_FILE:
-                    output_row["annotation"] = t_annotated
-                if KEEP_ORDER_OF_EXTRACTIONS:
-                    output_row["post_num"] = ind
-                    output_row["sentence_num"] = t_ind
-                output.append(output_row)
-                #print " output is : ", output
-                #output_subset = dict((k,output[k]) for k in header)
-                dict_writer.writerow(output_row)
-                
-                
-    if SAVE_ALL_RELS:
-        columns = ['sentence','arg1','rel','arg2','type','pattern','arg1_with_pos','rel_with_pos','arg2_with_pos']
-        if KEEP_ORDER_OF_EXTRACTIONS:
-            columns = ["post_num", "sentence_num"] + columns
-        df_output.to_csv(output_dir_arg + input_fname + "_" + "output_relations.csv",sep=',', encoding='utf-8',header=True, columns=columns)            
-    return all_rels_str, all_rels, output
 
 
-def rels_to_network(df_rels,
-                    input_fname,
-                    output_dir_arg,
-                    MAX_ITERATION,
-                    NODE_SELECTION,
-                    DATA_SET,
-                    SAVE_GEFX,
-                    SAVE_PAIRWISE_RELS,
-                    SHOW_ARGUMENT_GRAPH):
-    
-    if NODE_SELECTION:
-        # get the list of different versions of an entity. Example : parents,parent,i,we -> parents
-        entity_versions = get_entity_versions(DATA_SET)    
-        df_simp = get_simp_df(df_rels.copy(),entity_versions)  
-        selected_nodes = entity_versions.keys()
-        df_rels_selected = filter_nodes(df_simp.copy(),source='arg1',target='arg2',selected_nodes = selected_nodes)
-        g_arg = create_argument_multiGraph(df_rels_selected.copy(),source='arg1',target='arg2',edge_attr = 'rel')
-        if SAVE_GEFX:
-            nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_selected_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
-        plot_argument_graph(g_arg)
-        if SAVE_PAIRWISE_RELS:
-            file_loc = output_dir_arg + input_fname + "_" + "pairwise_rels_selected_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
-            save_pairwise_rels(file_loc,g_arg,print_option=True)      
-
-    g_arg = create_argument_multiGraph(df_rels.copy(),source='arg1',target='arg2',edge_attr = 'rel')
-    if SAVE_GEFX:
-        nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
-    if SHOW_ARGUMENT_GRAPH:
-        plot_argument_graph(g_arg)
-    if SAVE_PAIRWISE_RELS:
-        file_loc = output_dir_arg + input_fname + "_"  + "pairwise_rels_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
-        save_pairwise_rels(file_loc,g_arg,print_option=True)  
 

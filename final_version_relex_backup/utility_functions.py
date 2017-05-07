@@ -4,9 +4,8 @@ from collections import Counter
 #from collections import Counter
 #import pandas as pd
 
-def read_data(file_input,dataset="twitter",delim=",", LOAD_ANNOTATIONS=False):
-    print file_input
-    if dataset == "twitter-v0":      
+def read_data(file_input,dataset="twitter",delim=","):
+    if dataset == "twitter":      
         ff = open(file_input)
         h = ff.readline()
         header_orig = h.split(delim)
@@ -25,51 +24,12 @@ def read_data(file_input,dataset="twitter",delim=",", LOAD_ANNOTATIONS=False):
         return df_selected
     
         
-    if dataset == "mothering" or dataset == "sentence_only" or dataset == "goodreads": 
+    if dataset == "mothering" or dataset == "sentence_only": 
         ff = open(file_input)
         #delim='\n'
         df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)        
-        print df
         return df
-    
-    if dataset == "twitter":
-        #ff = open(file_input)
-        #h = ff.readline()
-        #header_orig = h.split(delim)
-        df = pd.read_csv(file_input,delimiter=delim, header=0, error_bad_lines=False)
-        if LOAD_ANNOTATIONS:
-            df_selected = df[['sentence', 'annotation']]
-            df_selected.columns = ['text', 'annotation']
-        else:
-            df_selected = df[['Replaced Version of Main Tweet']]
-            df_selected.columns = ['text']            
-        return df_selected
-    
 
-def get_file_input(DATA_SET):
-    if DATA_SET == "twitter":
-        based_dir = data_dir+ 'Tweets/'
-        file_input_name = 'tweets_textOnly_sample.txt'#'sample.csv'
-        file_input = based_dir + file_input_name      
-        df = read_data(file_input,"twitter",",")#read the input sentences
-        texts = df['text'].tolist()
-
-    if DATA_SET == "sentence_only":
-        based_dir = data_dir+ 'Tweets/'
-        file_input_name = 'tweets_textOnly.txt'#'sample.csv'
-        file_input = based_dir + file_input_name      
-        df = read_data(file_input,"sentence_only","\n")#read the input sentences
-        texts = df['text'].tolist()  
-
-    elif DATA_SET == "mothering":
-        based_dir = data_dir + 'Vaccination/'
-        file_input_name = 'sents.txt'
-        #file_input_name = 'sent_cdb_child_exemption.txt'
-        file_input = based_dir + file_input_name
-        # file_input is extra - should be removed later
-
-    return file_input
-    
 def save_pairwise_rels(file_loc,g,print_option=True):
     f = open(file_loc,'w')
     nodes = g.nodes()
@@ -145,19 +105,18 @@ def saveToFile_rows(outputLoc, inputList, delim):
         writer = csv.writer(f,delimiter=delim)
         writer.writerows(inputList)   
         
-def print_top_relations(all_rels,output_file, top_num=-1):
-    f = open(output_file, 'w')
+def print_top_relations(all_rels,top_num=-1):
     cnt = Counter()
     for r in all_rels:
         cnt[r] += 1
     if top_num == -1: # means print all
-        print >>f, "Frequent relations:"
+        print "Frequent relations:"
         for letter,count in cnt.most_common():
-            print >>f, letter, ": ", count
+            print letter, ": ", count
     else:
-        print >>f, "top ", top_num, " frequent relations:"
+        print "top ", top_num, " frequent relations:"
         for letter,count in cnt.most_common(top_num):
-            print >>f, letter, ": ", count     
+            print letter, ": ", count     
             
 def error_msg(error_type):
     if error_type == "tokenizer":

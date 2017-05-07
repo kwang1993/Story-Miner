@@ -11,11 +11,11 @@ from utility_functions import *
 '''
 PARAMETERS
 '''
-SEPARATE_SENT = False 
+SEPARATE_SENT = True 
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
 NODE_SELECTION = False
-MAX_ITERATION = 4 #-1 -> to try all
+MAX_ITERATION = -1 #-1 -> to try all
 SAVE_GEFX = True
 SAVE_PAIRWISE_RELS = True
 SAVE_ALL_RELS = False 
@@ -23,10 +23,11 @@ CLEAN_SENTENCES = False
 SET_INOUT_LOC_FROM_PYTHON_ARGS = False
 SHOW_ARGUMENT_GRAPH = False
 EXTRACT_NESTED_PREPOSITIONS_RELS = False
-DATA_SET = "twitter"
-INPUT_DELIMITER = ","
+DATA_SET = "goodreads"
+INPUT_DELIMITER = "\n"
 SAVE_ANNOTATIONS_TO_FILE = True
-LOAD_ANNOTATIONS = True
+LOAD_ANNOTATIONS = False 
+KEEP_ORDER_OF_EXTRACTIONS = True
 
 
 
@@ -46,9 +47,9 @@ else:
         file_input_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'+input_fname+'.csv'
         output_dir_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'
     else:
-        input_fname = 'sents_1'
-        file_input_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/hoffman_res/clean_tweets/sample/sents_1.csv'
-        output_dir_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'
+        input_fname = 'Hobbit-Pronoun'
+        file_input_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/GoodReads/Hobbit-Pronoun.txt'
+        output_dir_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/GoodReads/'
         
     
 
@@ -75,14 +76,15 @@ all_rels_str, all_rels, output = text_corpus_to_rels(file_input_arg,
                                                      SAVE_ALL_RELS,
                                                      EXTRACT_NESTED_PREPOSITIONS_RELS,
                                                      SAVE_ANNOTATIONS_TO_FILE,
-                                                     LOAD_ANNOTATIONS
+                                                     LOAD_ANNOTATIONS,
+                                                     KEEP_ORDER_OF_EXTRACTIONS
                                                     )            
 end_time = time.time()
 print "Relation Extraction Time: ", end_time-start_time , "(seconds) - ", (end_time-start_time)/60, "(min)"
 print "***************STATISTICS***************"
 #print "Total number of input records (posts): ", len(texts)
 print "Total number of extracted relations: ", len(all_rels_str)
-print_top_relations(all_rels_str,top_num=-1) 
+print_top_relations(all_rels_str,output_dir_arg+input_fname+'_top_rels.txt',top_num=-1) 
 df_rels = pd.DataFrame(all_rels)
 df_output = pd.DataFrame(output)
 
