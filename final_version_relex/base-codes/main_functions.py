@@ -3,6 +3,8 @@ from utility_functions import *
 
 from collections import Counter
 import ast
+import json
+from networkx.readwrite.json_graph import node_link_data
 
 def word_to_node_id(word, annotation):
     if word == "ROOT":
@@ -540,7 +542,8 @@ def rels_to_network(df_rels,
                     DATA_SET,
                     SAVE_GEFX,
                     SAVE_PAIRWISE_RELS,
-                    SHOW_ARGUMENT_GRAPH):
+                    SHOW_ARGUMENT_GRAPH,
+                    SAVE_G_JSON):
     
     if NODE_SELECTION:
         # get the list of different versions of an entity. Example : parents,parent,i,we -> parents
@@ -551,7 +554,7 @@ def rels_to_network(df_rels,
         g_arg = create_argument_multiGraph(df_rels_selected.copy(),source='arg1',target='arg2',edge_attr = 'rel')
         if SAVE_GEFX:
             nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_selected_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
-        plot_argument_graph(g_arg)
+        #plot_argument_graph(g_arg)
         if SAVE_PAIRWISE_RELS:
             file_loc = output_dir_arg + input_fname + "_" + "pairwise_rels_selected_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
             save_pairwise_rels(file_loc,g_arg,print_option=True)      
@@ -559,6 +562,11 @@ def rels_to_network(df_rels,
     g_arg = create_argument_multiGraph(df_rels.copy(),source='arg1',target='arg2',edge_attr = 'rel')
     if SAVE_GEFX:
         nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
+    if SAVE_G_JSON:
+        with open(output_dir_arg + input_fname + "_" + "g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".json", 'w') as outfile:
+            
+            json.dump(node_link_data(g_arg), outfile)
+        
     if SHOW_ARGUMENT_GRAPH:
         plot_argument_graph(g_arg)
     if SAVE_PAIRWISE_RELS:

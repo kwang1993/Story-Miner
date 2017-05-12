@@ -157,8 +157,56 @@ def print_top_relations(all_rels,output_file, top_num=-1):
     else:
         print >>f, "top ", top_num, " frequent relations:"
         for letter,count in cnt.most_common(top_num):
-            print >>f, letter, ": ", count     
+            print >>f, letter, ": ", count                 
+
+def save_pairwise_relations_with_node_selection(df_rels,entity_versions,output_file):
+    f = open(output_file, 'w')
+    cnt = Counter()
+    for entity in entity_versions:
+        print >>f, "-------------------------"
+        print >>f, "       ", entity
+        print >>f, "-------------------------"    
+        for ent_one_version in entity_versions[entity]:
+            print >>f, "\n\n**** ", ent_one_version, " ****"
+            df_all_versions = defaultdict(list)
+            df_one_version = df_rels[np.logical_or(df_rels['arg1'].str.contains(ent_one_version),df_rels['arg2'].str.contains(ent_one_version))]
+            list_one_version = df_one_version['rel'].tolist()
+            for r in list_one_version:
+                cnt[r] += 1
+            print >>f, "Frequent relations:"
+            for letter,count in cnt.most_common():
+                print >>f, letter, ": ", count             
             
+def get_top_entities(df_rels, output_file=None, top_num=-1, save_to_file=False):
+    entities = list(df_rels['arg1']) + list(df_rels['arg2'])
+    cols = ['entity', 'frequency']
+    df_entity_rankings = pd.DataFrame(columns = cols)
+    cnt = Counter()
+    for e in entities:
+        cnt[e] += 1
+    if top_num == -1: # means print all
+        #print "Frequent relations:"
+        for letter,count in cnt.most_common():
+            #print letter, ": ", count
+            df_entity_rankings.loc[len(df_entity_rankings)] = [letter, count]
+    else:
+        #print "top ", top_num, " frequent relations:"
+        for letter,count in cnt.most_common(top_num):
+            #print letter, ": ", count 
+            df_entity_rankings.loc[len(df_entity_rankings)] = [letter, count]
+
+    if output_file is not None and save_to_file:
+        f = open(output_file, 'w')
+        df_entity_rankings.to_csv(output_file,sep=',', encoding='utf-8',header=True, columns=cols)      
+        
+    return df_entity_rankings
+
+
+def print_full(df):
+    pd.set_option('display.max_rows', len(df))
+    print(df)
+    pd.reset_option('display.max_rows')
+
 def error_msg(error_type):
     if error_type == "tokenizer":
         return "Tokenizer failed during parsing, Ex. there might be a dash in the sentence!"
@@ -196,19 +244,41 @@ def get_entity_versions(dataset="mothering"):
                                               'pain', 'pains', 'bleeding', 'bruising', 'diarrhea', 'diarrhoea']
         
     if dataset=="twitter":
-        entity_versions['ApplePay'] = ['apple pay', 'Apple Pay', 'apple Pay', 'Apple pay']
-        entity_versions['SamsungPay'] = ['samsung pay', 'Samsung pay', 'samsung Pay', 'Samsung Pay']
-        entity_versions['googlewallet'] = ['google wallet', 'Google wallet', 'google Wallet', 'Google Wallet']
-        entity_versions['MasterCard'] = ['master card', 'Master card', 'master Card', 'Master Card']
-        entity_versions['Barclaycard'] = ['barclay card', 'Barclay card', 'barclay Card', 'Barclay Card']
-        entity_versions['McDonalds'] = ['mc donalds', 'mc Donalds', 'Mc donalds', 'Mc Donalds']
-        entity_versions['riteaid'] = ['rite aid', 'rite Aid', 'Rite aid', 'Rite Aid']
-        entity_versions['Barclays'] = ['BarclaysUK', 'barclaysUK', 'barclaysUKHelp', 'Barclays', 'BarclaysUKhelp', 'BarclaysUKHelp', 'barclays', 'BarclaysBank']
-        entity_versions['HSBC'] = ['HSBC_UK_Press', 'HSBC_US', 'hsbc', 'HSBC_AUS_Press', 'HSBC_UK', 'HSBC_UK_Help', 'hsbc_uk', 'HSBC_AUS_Help', 'HSBC_Group', 'HSBC_US_Help', 'HSBC_NOW', 'HSBC']
-        entity_versions['PayPal'] = ['paypal', 'PayPalUK', 'PayPalDE', 'PaypalIN', 'AskPayPal', 'PayPal', 'Paypal']
+        entity_versions['ApplePay'] = ['apple pay', 'apple Pay']
+        entity_versions['SamsungPay'] = ['samsung pay', 'samsung Pay']
+        entity_versions['googlewallet'] = ['google wallet', 'google Wallet']
+        entity_versions['MasterCard'] = ['master card', 'master Card']
+        entity_versions['Barclaycard'] = ['barclay card', 'barclay Card']
+        entity_versions['McDonalds'] = ['mc donalds', 'mc Donalds']
+        entity_versions['riteaid'] = ['rite aid', 'rite Aid']
+        entity_versions['Barclays'] = ['barclaysuk', 'barclaysukhelp', 'barclays', 'barclaysbank']
+        entity_versions['HSBC'] = ['hsbc_uk_press', 'hsbc_us', 'hsbc', 'hsbc_aus_Press', 'hsbc_uk', 'hsbc_uk_help', 'hsbc_uk', 'hsbc_aus_help', 'hsbc_group', 'hsbc_us_help', 'hsbc_now', 'hsbc']
+        entity_versions['PayPal'] = ['paypal', 'paypaluk', 'paypalde', 'paypalin', 'askpaypal', 'paypal', 'paypal']
         entity_versions['YouTube'] = ['YouTube']
-        entity_versions['Amex'] = ['AskAmexUK', 'askamex', 'AskAmex', 'AmEx', 'amex', 'Amex', 'AskAmexAU', 'AmexAU', 'AmexUK']
-        entity_versions['Starbucks'] = ['starbucks', 'StarbucksRU', 'Starbucks', 'StarbucksUK']
+        entity_versions['Amex'] = ['askamexuk', 'askamex', 'askamex', 'amex', 'askamexau', 'amexau', 'amexuk']
+        entity_versions['Starbucks'] = ['starbucks', 'starbucksru', 'starbucksuk']
+        
+    if dataset=="goodreads":
+        entity_versions['hobbit'] = ["hobbit", "hobbits"]
+        entity_versions['bilbo'] = ["bilbo", "baggins", "the hobbit", "burglar"]
+        entity_versions['dwarf'] = ["dwarf", "dwarves", "dwarvs", "dwarfs", "thorin", "kili", "fili", "bombur"]
+        entity_versions['tolkien'] = ["tolkien", "tolkein"]
+        entity_versions['ring'] = ["ring", "the ring"]
+        entity_versions['gandalf'] = ["gandalf", "wizard", "gandolf"]
+        entity_versions['dragon'] = ["dragon", "smaug"]
+        entity_versions['goblin'] = ["goblin", "goblins"]
+        entity_versions['elf'] = ["elf", "elves", "elvs", "elfs"]
+        entity_versions['wood-elves'] = ["wood-elves", "wood elves", "woodelves", "woodelvs", "woodelfs"]
+        entity_versions['treasure'] = ["treasure", "treasures"]
+        entity_versions['gollum'] = ["gollum", "smeagol", "smagol", "smegol"]
+        entity_versions['bard'] = ["bard", "archer"]
+        entity_versions['human'] = ["human", "humans", "man", "men", "lake-men"]
+        entity_versions['laketown'] = ["laketown", "lake-town", "lake town", "village"]
+        entity_versions['warg'] = ["warg", "wolves", "wolf", "wolverine", "wolverines"]
+        entity_versions['arkenstone'] = ["arkenstone", "gem"]
+        entity_versions['beorn'] = ["beorn", "bear"]
+        entity_versions['mountain'] = ["mountain", "mountains"]
+
         
     return entity_versions
         
@@ -278,14 +348,5 @@ def clean_sent(sent):
     sent = change_nt_to_not(sent)
     sent = change_multi_dots_to_single_dot(sent)
     return sent
-           
-'''
-# In[ ]:
 
-get_ipython().run_cell_magic(u'javascript', u'', u"var add_edit_shortcuts = {\n    'shift-enter' : {\n                help : 'run cell, select next codecell',\n                help_index : 'bb',\n                handler : function (event) {\n                IPython.notebook.execute_cell_and_select_below();\n                // find next CodeCell and go into edit mode if possible, else stay in next cell\n                var i;\n                for (i = IPython.notebook.get_selected_index(); i < IPython.notebook.ncells() ;i++) {\n                var cell = IPython.notebook.get_cell(i);\n                if (cell instanceof IPython.CodeCell) {\n                    IPython.notebook.select(i);\n                    IPython.notebook.edit_mode();\n                    break;\n                }\n            }\n            return false;\n        }\n    },\n};\n\nIPython.keyboard_manager.edit_shortcuts.add_shortcuts(add_edit_shortcuts); ")
-
-
-# In[ ]:
-
-'''
 
