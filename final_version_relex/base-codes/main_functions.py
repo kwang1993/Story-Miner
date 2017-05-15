@@ -523,6 +523,8 @@ def text_corpus_to_rels(file_input_arg,
                 output.append(output_row)
                 #print " output is : ", output
                 #output_subset = dict((k,output[k]) for k in header)
+                if dataset=="twitter":
+                    
                 dict_writer.writerow(output_row)
                 
                 

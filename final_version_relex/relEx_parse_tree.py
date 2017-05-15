@@ -15,20 +15,20 @@ SEPARATE_SENT = True
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
 NODE_SELECTION = False
-MAX_ITERATION = 1 #-1 -> to try all
-SAVE_GEFX = True
-SAVE_G_JSON = True
-SAVE_PAIRWISE_RELS = True
+MAX_ITERATION = -1 #-1 -> to try all
+SAVE_GEFX = False
+SAVE_G_JSON = False
+SAVE_PAIRWISE_RELS = False
 SAVE_ALL_RELS = False 
 CLEAN_SENTENCES = False
-SET_INOUT_LOC_FROM_PYTHON_ARGS = False
+SET_INOUT_LOC_FROM_PYTHON_ARGS = True
 SHOW_ARGUMENT_GRAPH = False
 EXTRACT_NESTED_PREPOSITIONS_RELS = False
 DATA_SET = "goodreads"
 INPUT_DELIMITER = "\n"
 SAVE_ANNOTATIONS_TO_FILE = True
 LOAD_ANNOTATIONS = False 
-KEEP_ORDER_OF_EXTRACTIONS = True
+KEEP_ORDER_OF_EXTRACTIONS = False
 
 
 
@@ -90,7 +90,7 @@ print_top_relations(all_rels_str,output_dir_arg+input_fname+'_top_rels.txt',top_
 df_rels = pd.DataFrame(all_rels)
 df_output = pd.DataFrame(output)
 
-print df_rels
+#print df_rels
 
 rels_to_network(df_rels,
                 input_fname,
