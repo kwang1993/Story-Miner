@@ -5,6 +5,7 @@ from collections import Counter
 import ast
 import json
 from networkx.readwrite.json_graph import node_link_data
+from collections import OrderedDict
 
 def word_to_node_id(word, annotation):
     if word == "ROOT":
@@ -453,6 +454,8 @@ def text_corpus_to_rels(file_input_arg,
         header = header + ['annotation']
     if KEEP_ORDER_OF_EXTRACTIONS:
         header = ["post_num", "sentence_num"] + header
+    if DATA_SET=="twitter":
+        header = df.columns.values.tolist() + header
     dict_writer = csv.DictWriter(f_rel, header)
     dict_writer.writeheader()#writerow(header)    
     
@@ -523,7 +526,16 @@ def text_corpus_to_rels(file_input_arg,
                 output.append(output_row)
                 #print " output is : ", output
                 #output_subset = dict((k,output[k]) for k in header)
-                if dataset=="twitter":
+                if DATA_SET=="twitter":
+                    print "-------------------------df.iloc[[ind]]-------------------------"
+                    print df.iloc[[ind]]
+                    d_orig = df.iloc[[ind]].to_dict(orient='records')#dict(df.iloc[[ind]].)
+                    #print "after dict()"
+                    #print type(d_orig)
+                    #d_final = dict(d_orig)
+                    #d_final.update(output_row)
+                    output_row.update(d_orig[0])
+                    print output_row
                     
                 dict_writer.writerow(output_row)
                 
@@ -556,22 +568,27 @@ def rels_to_network(df_rels,
         g_arg = create_argument_multiGraph(df_rels_selected.copy(),source='arg1',target='arg2',edge_attr = 'rel')
         if SAVE_GEFX:
             nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_selected_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
-        #plot_argument_graph(g_arg)
+        if SAVE_G_JSON:
+            with open(output_dir_arg + input_fname + "_" + "g_arg_selected"+str(MAX_ITERATION)+"_"+str(time.time())+".json", 'w') as outfile:
+
+                json.dump(node_link_data(g_arg), outfile)
+        if SHOW_ARGUMENT_GRAPH:
+            plot_argument_graph(g_arg)
         if SAVE_PAIRWISE_RELS:
             file_loc = output_dir_arg + input_fname + "_" + "pairwise_rels_selected_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
             save_pairwise_rels(file_loc,g_arg,print_option=True)      
+    else:
+        g_arg = create_argument_multiGraph(df_rels.copy(),source='arg1',target='arg2',edge_attr = 'rel')
+        if SAVE_GEFX:
+            nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
+        if SAVE_G_JSON:
+            with open(output_dir_arg + input_fname + "_" + "g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".json", 'w') as outfile:
 
-    g_arg = create_argument_multiGraph(df_rels.copy(),source='arg1',target='arg2',edge_attr = 'rel')
-    if SAVE_GEFX:
-        nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
-    if SAVE_G_JSON:
-        with open(output_dir_arg + input_fname + "_" + "g_arg_"+str(MAX_ITERATION)+"_"+str(time.time())+".json", 'w') as outfile:
-            
-            json.dump(node_link_data(g_arg), outfile)
-        
-    if SHOW_ARGUMENT_GRAPH:
-        plot_argument_graph(g_arg)
-    if SAVE_PAIRWISE_RELS:
-        file_loc = output_dir_arg + input_fname + "_"  + "pairwise_rels_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
-        save_pairwise_rels(file_loc,g_arg,print_option=True)  
+                json.dump(node_link_data(g_arg), outfile)
+
+        if SHOW_ARGUMENT_GRAPH:
+            plot_argument_graph(g_arg)
+        if SAVE_PAIRWISE_RELS:
+            file_loc = output_dir_arg + input_fname + "_"  + "pairwise_rels_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
+            save_pairwise_rels(file_loc,g_arg,print_option=True)  
 

@@ -25,7 +25,7 @@ def read_data(file_input,dataset="twitter",delim=",", LOAD_ANNOTATIONS=False):
         return df_selected
     
         
-    if dataset == "mothering" or dataset == "sentence_only" or dataset == "goodreads": 
+    if dataset == "mothering" or dataset == "sentence_only" or dataset == "goodreads" or "goodreads" in dataset: 
         ff = open(file_input)
         #delim='\n'
         df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)        
@@ -37,13 +37,17 @@ def read_data(file_input,dataset="twitter",delim=",", LOAD_ANNOTATIONS=False):
         #h = ff.readline()
         #header_orig = h.split(delim)
         df = pd.read_csv(file_input,delimiter=delim, header=0, error_bad_lines=False)
+        df.rename(columns={'Replaced Version of Main Tweet': 'text'}, inplace=True)
+        '''
         if LOAD_ANNOTATIONS:
             df_selected = df[['sentence', 'annotation']]
             df_selected.columns = ['text', 'annotation']
         else:
-            df_selected = df[['Replaced Version of Main Tweet']]
-            df_selected.columns = ['text']            
-        return df_selected
+            df.rename(columns={'Replaced Version of Main Tweet': 'text'}, inplace=True)
+            #df_selected = df[['Replaced Version of Main Tweet']]
+            #df_selected.columns = ['text'] 
+        '''
+        return df
     
 
 def get_file_input(DATA_SET):
@@ -258,7 +262,7 @@ def get_entity_versions(dataset="mothering"):
         entity_versions['Amex'] = ['askamexuk', 'askamex', 'askamex', 'amex', 'askamexau', 'amexau', 'amexuk']
         entity_versions['Starbucks'] = ['starbucks', 'starbucksru', 'starbucksuk']
         
-    if dataset=="goodreads":
+    if dataset=="goodreads-Hobbit":
         entity_versions['hobbit'] = ["hobbit", "hobbits"]
         entity_versions['bilbo'] = ["bilbo", "baggins", "the hobbit", "burglar"]
         entity_versions['dwarf'] = ["dwarf", "dwarves", "dwarvs", "dwarfs", "thorin", "kili", "fili", "bombur"]
@@ -278,6 +282,28 @@ def get_entity_versions(dataset="mothering"):
         entity_versions['arkenstone'] = ["arkenstone", "gem"]
         entity_versions['beorn'] = ["beorn", "bear"]
         entity_versions['mountain'] = ["mountain", "mountains"]
+        
+    if dataset=="goodreads-Frankenstein":
+        entity_versions['monster'] = ['monster', 'monsters', 'monsterous']
+        entity_versions['frankenstein'] = ['frankenstein','frankensteins','victor','victors', 'victor_frankenstein', 'victor_frankensteins', 'victor frankenstein']
+        entity_versions['creature'] = ['creature','creatures']
+        entity_versions['creation'] = ['creation','creations','creationism']
+        entity_versions['god'] = ['creator','creators', 'god']
+        entity_versions['mary shelley'] = ['mary_shellei', 'mary_shelley','mary','shellei','shelley','mary shellei', 'mary shelley', 'author']
+        entity_versions['man'] = ['man','mans']
+        entity_versions['novel'] = ['novel','novelization','stori','stories','tale', 'story', 'book']
+        entity_versions['human'] = ['human','humane','humanity','humans','humanness']
+        entity_versions['life'] = ['life','lifes','life.']
+        entity_versions['death'] = ['death','deaths']       
+        entity_versions['revenge'] = ['revenge','reveng']
+        entity_versions['letter'] = ['letter','letters']
+        entity_versions['elizabeth'] = ['elizabeth']
+        entity_versions['walton'] = ['Walton']
+        entity_versions['henry'] = ['henry']
+        entity_versions['doctor'] = ['doctor']
+        entity_versions['dracula'] = ['dracula']
+        
+        
 
         
     return entity_versions

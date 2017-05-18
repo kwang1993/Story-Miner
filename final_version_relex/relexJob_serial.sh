@@ -10,7 +10,7 @@
 #dataset="Vaccination/mothering_chunks_sent_sep_clean"
 
 projectDataDir="/u/home/v/vahabpou/behnam/output"
-projectDir="$HOME//relation_extraction"
+projectDir="$HOME/relation_extraction"
 outdir="$HOME/relation_extraction/data/Twitter_output"
 
 inputFile1="$projectDataDir/sents_$((4*${SGE_TASK_ID}-3)).txt"

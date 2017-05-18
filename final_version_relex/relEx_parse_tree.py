@@ -20,15 +20,15 @@ SAVE_GEFX = False
 SAVE_G_JSON = False
 SAVE_PAIRWISE_RELS = False
 SAVE_ALL_RELS = False 
-CLEAN_SENTENCES = False
-SET_INOUT_LOC_FROM_PYTHON_ARGS = True
+CLEAN_SENTENCES = False 
+SET_INOUT_LOC_FROM_PYTHON_ARGS = False
 SHOW_ARGUMENT_GRAPH = False
 EXTRACT_NESTED_PREPOSITIONS_RELS = False
-DATA_SET = "goodreads"
-INPUT_DELIMITER = "\n"
+DATA_SET = "twitter"
+INPUT_DELIMITER = ","
 SAVE_ANNOTATIONS_TO_FILE = True
 LOAD_ANNOTATIONS = False 
-KEEP_ORDER_OF_EXTRACTIONS = True 
+KEEP_ORDER_OF_EXTRACTIONS = False 
 
 
 
@@ -45,13 +45,13 @@ if SET_INOUT_LOC_FROM_PYTHON_ARGS:
     output_prefix = output_dir_arg + input_fname
 else:
     if LOAD_ANNOTATIONS:
-        input_fname = 'sents_1_relations_4'#'sents_1'
+        input_fname = 'sents_1'
         file_input_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'+input_fname+'.csv'
         output_dir_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'
     else:
-        input_fname = 'Hobbit-Pronoun'
-        file_input_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/GoodReads/Hobbit-Pronoun.txt'
-        output_dir_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/GoodReads/'
+        input_fname = 'sents_1'
+        file_input_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'+input_fname+'.csv'
+        output_dir_arg = '/Users/behnam/Desktop/Behnam_Files/vwani_text_mining/RE_Behnam/data/Tweets/'
         
     
 
