@@ -4,7 +4,7 @@ sys.path.insert(0, './base-codes')
 sys.path.insert(0, './data-specific-codes')
 sys.path.insert(0, './utility-codes')
 
-from init import *
+from RE_init import *
 from main_functions import *
 from utility_functions import *
 
@@ -15,7 +15,7 @@ SEPARATE_SENT = True
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
 NODE_SELECTION = False
-MAX_ITERATION = -1 #-1 -> to try all
+MAX_ITERATION = 1 #-1 -> to try all
 SAVE_GEFX = False
 SAVE_G_JSON = False
 SAVE_PAIRWISE_RELS = False
@@ -23,7 +23,7 @@ SAVE_ALL_RELS = False
 CLEAN_SENTENCES = False 
 SET_INOUT_LOC_FROM_PYTHON_ARGS = False
 SHOW_ARGUMENT_GRAPH = False
-EXTRACT_NESTED_PREPOSITIONS_RELS = False
+EXTRACT_NESTED_PREPOSITIONS_RELS = True 
 DATA_SET = "twitter"
 INPUT_DELIMITER = ","
 SAVE_ANNOTATIONS_TO_FILE = True

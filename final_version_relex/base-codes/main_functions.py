@@ -1,4 +1,4 @@
-from init import *
+from RE_init import *
 from utility_functions import *
 
 from collections import Counter
@@ -165,7 +165,7 @@ def get_nested_preposition_rels(g_dir, main_word_id, expansion_list):
                     if e_nested["rel"] in expansion_list:
                         single_nested_rel_ids.append(word_id_nested)
                 nested_rel_final_word_str, nested_rel_final_with_pos_str = sort_word_ids(single_nested_rel_ids, nested_rel_head_ind)
-                print "nested rel : ", nested_rel_final_word_str
+                #print "nested rel : ", nested_rel_final_word_str
                 single_nested_rel["text"] = nested_rel_final_word_str
                 nested_rels.append(single_nested_rel)          
            
@@ -527,15 +527,15 @@ def text_corpus_to_rels(file_input_arg,
                 #print " output is : ", output
                 #output_subset = dict((k,output[k]) for k in header)
                 if DATA_SET=="twitter":
-                    print "-------------------------df.iloc[[ind]]-------------------------"
-                    print df.iloc[[ind]]
+                    #print "-------------------------df.iloc[[ind]]-------------------------"
+                    #print df.iloc[[ind]]
                     d_orig = df.iloc[[ind]].to_dict(orient='records')#dict(df.iloc[[ind]].)
                     #print "after dict()"
                     #print type(d_orig)
                     #d_final = dict(d_orig)
                     #d_final.update(output_row)
                     output_row.update(d_orig[0])
-                    print output_row
+                    #print output_row
                     
                 dict_writer.writerow(output_row)
                 
