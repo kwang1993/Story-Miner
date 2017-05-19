@@ -1,12 +1,12 @@
 import os
 import sys
-sys.path.insert(0, './base-codes')
-sys.path.insert(0, './data-specific-codes')
-sys.path.insert(0, './utility-codes')
+sys.path.insert(0, './base_codes')
+sys.path.insert(0, './data_specific_codes')
+sys.path.insert(0, './utility_codes')
 
-from RE_init import *
-from main_functions import *
-from utility_functions import *
+from base_codes.RE_init import *
+from base_codes.main_functions import *
+from base_codes.utility_functions import *
 
 '''
 PARAMETERS
