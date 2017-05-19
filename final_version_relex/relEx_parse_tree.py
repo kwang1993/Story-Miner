@@ -31,7 +31,7 @@ LOAD_ANNOTATIONS = False
 KEEP_ORDER_OF_EXTRACTIONS = False 
 
 
-
+print "helloo"
 
 
 data_dir = "../../data/"

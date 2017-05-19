@@ -1,8 +1,8 @@
 #!/bin/bash
-#$ -l h_data=8G,h_rt=4:00:00
+#$ -l h_data=8G,h_rt=1:00:00
 #$ -o $HOME/job_output.txt
 #$ -e $HOME/job_errors.txt
-#$ -t 1-50:1
+#$ -t 1-2:1
 
 . /u/local/Modules/default/init/modules.sh
 
@@ -21,9 +21,9 @@ outputFile="$outdir/"
 
 module load python/2.7
 python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile1 $outputFile 
-python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile2 $outputFile 
-python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile3 $outputFile
-python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile4 $outputFile
+python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile2 $outputFile
+python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile3 $outputFile 
+python $projectDir/Story-Miner/final_version_relex/relEx_parse_tree.py $inputFile4 $outputFile 
 
 echo "Tasks $((4*${SGE_TASK_ID}-3))-$((4*${SGE_TASK_ID})) finished."
 

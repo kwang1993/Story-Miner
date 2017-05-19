@@ -487,20 +487,20 @@ def text_corpus_to_rels(file_input_arg,
             except:
                 print "Error in sentence annotation"
                 continue
-            try:
+            #try:
 
                        
-                #print type(t_annotated)
-                g_dir = create_dep_graph(t_annotated)
-                if g_dir is None:
-                    print "No extraction found"
-                    continue
-                if SHOW_DP_PLOTS:
-                    plot_dep(g_dir,t)
-                g_undir = g_dir.to_undirected()
-            except:
-                print "Unexpected error while extracting relations:", sys.exc_info()[0]
+            #print type(t_annotated)
+            g_dir = create_dep_graph(t_annotated)
+            if g_dir is None:
+                print "No extraction found"
                 continue
+            if SHOW_DP_PLOTS:
+                plot_dep(g_dir,t)
+                g_undir = g_dir.to_undirected()
+            #except:
+            #    print "Unexpected error while extracting relations:", sys.exc_info()[0]
+            #    continue
             rels_pure, rels_simp = get_relations(g_dir, t_annotated, EXTRACT_NESTED_PREPOSITIONS_RELS, option="SVO")
             rels = rels_pure#rels_simp
             if SHOW_REL_EXTRACTIONS:
