@@ -1,6 +1,5 @@
 #!/bin/bash
-#$ -l h_data=8G,h_rt=11:00:00
-#$ -pe shared 4
+#$ -l h_data=8G,h_rt=4:00:00
 #$ -o $HOME/job_output.txt
 #$ -e $HOME/job_errors.txt
 #$ -t 1-50:1
