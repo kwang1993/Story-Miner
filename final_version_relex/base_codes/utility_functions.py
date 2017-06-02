@@ -28,7 +28,7 @@ def read_data(file_input,dataset="twitter",delim=",", LOAD_ANNOTATIONS=False):
     if dataset == "mothering" or dataset == "sentence_only" or dataset == "goodreads" or "goodreads" in dataset: 
         ff = open(file_input)
         #delim='\n'
-        df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)        
+        df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)
         print df
         return df
     

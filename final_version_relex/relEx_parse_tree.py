@@ -24,14 +24,13 @@ CLEAN_SENTENCES = False
 SET_INOUT_LOC_FROM_PYTHON_ARGS = True 
 SHOW_ARGUMENT_GRAPH = False
 EXTRACT_NESTED_PREPOSITIONS_RELS = True 
-DATA_SET = "twitter"
-INPUT_DELIMITER = ","
+DATA_SET = "goodreads"
+INPUT_DELIMITER = "\n"
 SAVE_ANNOTATIONS_TO_FILE = True
 LOAD_ANNOTATIONS = False 
-KEEP_ORDER_OF_EXTRACTIONS = False 
+KEEP_ORDER_OF_EXTRACTIONS = True 
 
 
-print "helloo"
 
 
 data_dir = "../../data/"
@@ -91,7 +90,7 @@ df_rels = pd.DataFrame(all_rels)
 df_output = pd.DataFrame(output)
 
 #print df_rels
-
+'''
 rels_to_network(df_rels,
                 input_fname,
                 output_dir_arg,
@@ -103,7 +102,7 @@ rels_to_network(df_rels,
                 SHOW_ARGUMENT_GRAPH,
                 SAVE_G_JSON
                )
-
+'''
 #if __name__ == "__main__":
 #    main(sys.argv[1:])
 #'''
