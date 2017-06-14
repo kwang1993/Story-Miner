@@ -29,7 +29,7 @@ def read_data(file_input,dataset="twitter",delim=",", LOAD_ANNOTATIONS=False):
         ff = open(file_input)
         #delim='\n'
         df = pd.read_csv(file_input,delimiter=delim,header=0,error_bad_lines=False)
-        print df
+        #print df
         return df
     
     if dataset == "twitter":
@@ -248,19 +248,32 @@ def get_entity_versions(dataset="mothering"):
                                               'pain', 'pains', 'bleeding', 'bruising', 'diarrhea', 'diarrhoea']
         
     if dataset=="twitter":
-        entity_versions['ApplePay'] = ['apple pay', 'apple Pay']
-        entity_versions['SamsungPay'] = ['samsung pay', 'samsung Pay']
-        entity_versions['googlewallet'] = ['google wallet', 'google Wallet']
-        entity_versions['MasterCard'] = ['master card', 'master Card']
-        entity_versions['Barclaycard'] = ['barclay card', 'barclay Card']
-        entity_versions['McDonalds'] = ['mc donalds', 'mc Donalds']
-        entity_versions['riteaid'] = ['rite aid', 'rite Aid']
-        entity_versions['Barclays'] = ['barclaysuk', 'barclaysukhelp', 'barclays', 'barclaysbank']
-        entity_versions['HSBC'] = ['hsbc_uk_press', 'hsbc_us', 'hsbc', 'hsbc_aus_Press', 'hsbc_uk', 'hsbc_uk_help', 'hsbc_uk', 'hsbc_aus_help', 'hsbc_group', 'hsbc_us_help', 'hsbc_now', 'hsbc']
-        entity_versions['PayPal'] = ['paypal', 'paypaluk', 'paypalde', 'paypalin', 'askpaypal', 'paypal', 'paypal']
-        entity_versions['YouTube'] = ['YouTube']
-        entity_versions['Amex'] = ['askamexuk', 'askamex', 'askamex', 'amex', 'askamexau', 'amexau', 'amexuk']
-        entity_versions['Starbucks'] = ['starbucks', 'starbucksru', 'starbucksuk']
+        entity_versions['applepay'] = ['applepay']
+        entity_versions['samsungpay'] = ['samsungpay']
+        entity_versions['samsung'] = ['samsung']
+        entity_versions['apple'] = ['apple']
+        entity_versions['verizon'] = ['verizon']
+        entity_versions['googlewallet'] = ['googlewallet']
+        entity_versions['mastercard'] = ['mastercard']
+        entity_versions['barclaycard'] = ['barclaycard']
+        entity_versions['mcdonalds'] = ['mcdonalds']
+        entity_versions['riteaid'] = ['riteaid']
+        entity_versions['barclays'] = ['barclays']
+        entity_versions['hsbc'] = ['hsbc', 'hsbc direct']
+        entity_versions['paypal'] = ['paypal']
+        entity_versions['youtube'] = ['youtube']
+        entity_versions['amex'] = ['american express', 'express', 'amex']
+        entity_versions['starbucks'] = ['starbucks']
+        entity_versions['looppay'] = ['looppay']
+        entity_versions['chinese hackers'] = ['hackers', 'hackers', 'chinese hackers']
+        entity_versions['the uk'] = ['the uk', 'uk']
+        entity_versions['the us'] = ['the us', 'us']
+        entity_versions['chilis'] = ['chilis']
+        entity_versions['banks'] = ['banks', 'bank']
+        entity_versions['lloyds'] = ['lloyds']
+        entity_versions['tesco'] = ['tesco']
+        entity_versions['chevron'] = ['chevron']
+
         
     if dataset=="goodreads-Hobbit":
         entity_versions['hobbit'] = ["hobbit", "hobbits"]
@@ -278,34 +291,86 @@ def get_entity_versions(dataset="mothering"):
         entity_versions['bard'] = ["bard", "archer"]
         entity_versions['human'] = ["human", "humans", "man", "men", "lake-men"]
         entity_versions['laketown'] = ["laketown", "lake-town", "lake town", "village"]
-        entity_versions['warg'] = ["warg", "wolves", "wolf", "wolverine", "wolverines"]
+        entity_versions['warg'] = ["warg", "wolves", "wolf", "wolverine", "wolverines", "wargs"]
         entity_versions['arkenstone'] = ["arkenstone", "gem"]
         entity_versions['beorn'] = ["beorn", "bear"]
         entity_versions['mountain'] = ["mountain", "mountains"]
+        entity_versions["elrond"] = ["elrond"]
+        entity_versions["sauron"] = ["sauron","lord sauron", "dark lord sauron"]
+        entity_versions["mirkwood"] = ["mirkwood"]
+        entity_versions["spiders"] = ["spiders","spider"]
         
-    if dataset=="goodreads-Frankenstein":
-        entity_versions['monster'] = ['monster', 'monsters', 'monsterous']
+    if dataset=="goodreads-Frankenstein":        
+        entity_versions['monster'] = ['monster', 'monsters', 'monsterous', 'creature','creatures', 'creation','creations']
         entity_versions['frankenstein'] = ['frankenstein','frankensteins','victor','victors', 'victor_frankenstein', 'victor_frankensteins', 'victor frankenstein']
-        entity_versions['creature'] = ['creature','creatures']
-        entity_versions['creation'] = ['creation','creations','creationism']
         entity_versions['god'] = ['creator','creators', 'god']
         entity_versions['mary shelley'] = ['mary_shellei', 'mary_shelley','mary','shellei','shelley','mary shellei', 'mary shelley', 'author']
         entity_versions['man'] = ['man','mans']
+        entity_versions['2nd creature'] = ['new creature', 'second creature', '2nd creature', 'another creature']
         entity_versions['novel'] = ['novel','novelization','stori','stories','tale', 'story', 'book']
         entity_versions['human'] = ['human','humane','humanity','humans','humanness']
         entity_versions['life'] = ['life','lifes','life.']
         entity_versions['death'] = ['death','deaths']       
         entity_versions['revenge'] = ['revenge','reveng']
         entity_versions['letter'] = ['letter','letters']
-        entity_versions['elizabeth'] = ['elizabeth']
-        entity_versions['walton'] = ['Walton']
-        entity_versions['henry'] = ['henry']
+        entity_versions['elizabeth'] = ['elizabeth', 'wife']
+        entity_versions['walton'] = ['walton', 'robert', 'robert walton']
+        entity_versions['henry'] = ['henry', 'clerval', 'henry clerval']
         entity_versions['doctor'] = ['doctor']
-        entity_versions['dracula'] = ['dracula']
+        entity_versions['dracula'] = ['dracula']        
         
         
+    if dataset=="goodreads-Mice-and-men":
+        entity_versions['Lennie'] = ['lennie', 'lennie small', 'lenny', 'small']
+        entity_versions['George'] = ['george', 'george milton', 'milton']
+        entity_versions['Candy'] = ['candy']
+        entity_versions["Curley's wife"] = ["curley's wife", "curley wife", "tramp", "tart", "looloo", 'wife']
+        entity_versions['Crooks'] = ['crooks']
+        entity_versions['Curley'] = ['curley']    
+        entity_versions['Slim'] = ['slim']
+        entity_versions['Carlson'] = ['carlson']
+        entity_versions['The Boss'] = ['the boss', "curley's father", "boss"]
+        entity_versions['Aunt Clara'] = ['aunt clara', "lennie's aunt", 'aunt', 'clara']
+        entity_versions['Whit'] = ['whit']
+        entity_versions["Candy's dog"] = ["Candy's dog", "dog"]
+        entity_versions['Steinbeck'] = ['steinbeck', 'john steinbeck']
+        entity_versions['Puppy'] = ['puppy', 'the puppy']
+        entity_versions['Mice'] = ['mice', 'mouse']
+        entity_versions['Neck'] = ['neck']
+        entity_versions['Farm'] = ['farm']
+        entity_versions['Rabbits'] = ['rabbits', 'rabbit']
+        entity_versions['Body'] = ['body']
 
         
+        
+    if dataset=="goodreads-Mockingbird":
+        entity_versions['scout'] = ['scout', 'scout finch', 'sister']
+        entity_versions['atticus'] = ['atticus', 'atticus finch', 'father']
+        entity_versions['jem'] = ['jem', 'jem finch', 'brother']
+        entity_versions['lee'] = ['lee', 'harper lee', 'author']
+        entity_versions['tom'] = ['tom', 'tom robinson', 'robinson', 'black man', 'negro', 'black negro']
+        entity_versions['mockingbird'] = ['mockingbird']
+        entity_versions['bob ewell'] = ['bob ewell', 'ewell', 'bob', 'mr. ewell', 'mr ewell']
+        entity_versions['boo'] = ['boo', 'arthur', 'arthur radley', 'boo radley']
+        entity_versions['dill'] = ['dill', 'charles baker', 'dill harris']
+        entity_versions['mayella'] = ['mayella', 'mayella ewell']
+        entity_versions['nathan radley'] = ['nathan radley', 'nathan']
+        entity_versions['radley place'] = ['radley place', "radley's place", 
+                                           'radley property', "radley's property", 'radley house']
+        entity_versions['jury'] = ['jury']
+        entity_versions['alexandra'] = ['alexandra', 'aunt alexandra']
+        entity_versions['maycomb'] = ['maycomb']
+        entity_versions['racism'] = ['racism']
+        entity_versions['bluejays'] = ['bluejays']
+        entity_versions['miss maudie'] = ['miss maudie', 'maudie']
+        entity_versions['trial'] = ['trial', 'court']
+        entity_versions['fact'] = ['fact']
+        entity_versions['case'] = ['case']
+        entity_versions['mrs. dubose'] = ['mrs. dubose', 'dubose', 'mrs dubose']
+        entity_versions['gregory peck'] = ['gregory peck', 'peck', 'gregory']
+        entity_versions['justice'] = ['justice']
+        entity_versions['prejudice'] = ['prejudice']
+        entity_versions['jean louise finch'] = ['jean louise finch']        
     return entity_versions
         
     
@@ -359,18 +424,30 @@ def change_multi_dots_to_single_dot(sent):
             res_sent += c
     return res_sent
             
+def strip_non_ascii(sent):
+    ''' Returns the string without non ASCII characters'''
+    stripped = (c for c in sent if 0 < ord(c) < 127)
+    return ''.join(stripped)
 
 def clean_sent(sent):
     '''
     This function 
-            1. Replace - with .
-            2. Remove punctuations - except ".", ",", ":".
-            3. Change n't to not
+            1. Remove non-accii characters (encode to utf-8).
+            2. Replace - with .
+            3. Remove punctuations - except ".",",",";", "!", "?", "'".
+            4. Change n't to not
     '''
+    
+    #sent = sent.encode('utf-8')
+    #printable = set(string.printable)
+    #''.join(filter(lambda x: x in printable, sent))
+    
+    sent = strip_non_ascii(sent)
     
     sent = sent.replace("-",".")#.replace("(","").replace(")","")
     exclude = set(string.punctuation) - {".",",",";", "!", "?", "'"}
-    sent = ''.join(ch for ch in sent if ch not in exclude)    
+    sent = ''.join(ch for ch in sent if ch not in exclude)
+
     sent = change_nt_to_not(sent)
     sent = change_multi_dots_to_single_dot(sent)
     return sent

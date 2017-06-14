@@ -488,16 +488,14 @@ def text_corpus_to_rels(file_input_arg,
                 print "Error in sentence annotation"
                 continue
             try:
-
-			       
-		#print type(t_annotated)
-		g_dir = create_dep_graph(t_annotated)
-		if g_dir is None:
-		    print "No extraction found"
-		    continue
-		if SHOW_DP_PLOTS:
+                #print type(t_annotated)
+                g_dir = create_dep_graph(t_annotated)
+                if g_dir is None:
+                    print "No extraction found"
+                    continue
+                if SHOW_DP_PLOTS:
                     plot_dep(g_dir,t)
-                    g_undir = g_dir.to_undirected()
+                g_undir = g_dir.to_undirected()
             except:
                 print "Unexpected error while extracting relations:", sys.exc_info()[0]
                 continue
@@ -557,14 +555,17 @@ def rels_to_network(df_rels,
                     SAVE_GEFX,
                     SAVE_PAIRWISE_RELS,
                     SHOW_ARGUMENT_GRAPH,
-                    SAVE_G_JSON):
+                    SAVE_G_JSON,
+                    SAVE_DF_SELECTED):
     
     if NODE_SELECTION:
         # get the list of different versions of an entity. Example : parents,parent,i,we -> parents
-        entity_versions = get_entity_versions(DATA_SET)    
+        entity_versions = get_entity_versions(DATA_SET)
         df_simp = get_simp_df(df_rels.copy(),entity_versions)  
         selected_nodes = entity_versions.keys()
         df_rels_selected = filter_nodes(df_simp.copy(),source='arg1',target='arg2',selected_nodes = selected_nodes)
+        if SAVE_DF_SELECTED:
+            df_rels_selected.to_csv(output_dir_arg + input_fname + "_" + "selected_relations.csv",sep=',', encoding='utf-8',header=True, columns=df_rels_selected.columns.tolist())
         g_arg = create_argument_multiGraph(df_rels_selected.copy(),source='arg1',target='arg2',edge_attr = 'rel')
         if SAVE_GEFX:
             nx.write_gexf(g_arg, output_dir_arg + input_fname + "_" + "g_arg_selected_"+str(MAX_ITERATION)+"_"+str(time.time())+".gexf")
