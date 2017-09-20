@@ -1,1 +1,1 @@
-(S1(S(NP(NNP George))(VP(VBZ meets)(NP(NP(NNP Lennie))(PP(IN at)(NP(NNP Ranch)))))))
+(S1(S(NP(DT A)(NN problem))(NP(PRP I))(VP(VBD had)(PP(IN with)(NP(NP(NNP Tolkien)(POS 's))(NN work)))(SBAR(S(NP(PRP I))(VP(VBD 'd)(SBAR(IN that)(S(NP(DT neither)(NP(NNP Bilbo))(CC nor)(NP(DT the)(NNS dwarves)))(VP(VBP kill)(NP(DT the)(NN dragon)))))))))(. .)))

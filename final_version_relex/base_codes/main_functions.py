@@ -40,7 +40,55 @@ def sort_word_ids(word_ids, head_word_ind):
     # removing the extra space at the end
     return word_sorted_str.strip(), word_with_pos_sorted_str.strip()
 
-def expand_rel(rel, g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS):
+
+def get_expansion_list(node_id, node_type="arg", rel_type="SVO"):
+    arg_expand_list = ['nn', 'amod', 'det', 'neg', 'prep_of', 'num', 'quantmod', 'poss']
+    arg_expand_non_nnp_list = ['infmod', 'partmod', 'ref', 'prepc_of'] #'rcmod' -> it's alwasys connected to nsubj
+    rel_expand_list = ['advmod', 'mod', 'aux', 'auxpass', 'cop', 'prt','neg', 'poss']
+    rel_expand_non_SVO_list = ['dobj', 'iobj']
+
+    if node_type == "arg":
+        if word_id_get_pos(node_id) != "NNP":
+            return arg_expand_list + arg_expand_non_nnp_list
+        else:
+            return arg_expand_list
+
+    if node_type == "rel":
+        if rel_type != "SVO":
+            return rel_expand_list + rel_expand_non_SVO_list
+        else:
+            return rel_expand_list
+            
+    return []
+
+def expand_node_id(node_id, g_dir, node_type="arg", rel_type="SVO",EXTRACT_NESTED_PREPOSITIONS_RELS=True):
+    res_expanded = defaultdict(list)
+    expansion_list = get_expansion_list(node_id, node_type = node_type, rel_type = rel_type)
+    g_dir_v = None
+    node_extra_ids = []
+    node_extra_ids.append(node_id)
+    node_head_id_ind = word_id_get_index(node_id)
+    try:
+        g_dir_v = g_dir[node_id]
+    except:
+        print "Faild to get adjacency network of ", node_id, " while expanding it."
+        return
+    for word_id, e in g_dir_v.iteritems():
+        if e["rel"] in expansion_list:
+            node_extra_ids.append(word_id)
+            
+    node_final_word_str, node_final_with_pos_str = sort_word_ids(node_extra_ids, node_head_id_ind)
+    
+    res_expanded['rel_prepositions'] = ""
+    if EXTRACT_NESTED_PREPOSITIONS_RELS:
+        res_expanded['rel_prepositions'] = get_nested_preposition_rels(g_dir, node_id, expansion_list)
+    
+    res_expanded["final_word_str"] = node_final_word_str
+    res_expanded["final_word_with_pos_str"] = node_final_with_pos_str
+    
+    return res_expanded
+    
+def expand_rel(rel, g_dir, EXTRACT_NESTED_PREPOSITIONS_RELS):
     '''
     Expands arguments by adding extra related words, such as nn, amod, and so on. 
     Expands relations by adding extra related words, such as adverbs, and so on.
@@ -51,9 +99,9 @@ def expand_rel(rel, g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS):
     arg2 = rel['arg2']
     r = rel['rel']
     
-    arg_expand_list = ['nn', 'amod', 'det', 'neg', 'prep_of', 'num', 'quantmod']
+    arg_expand_list = ['nn', 'amod', 'det', 'neg', 'prep_of', 'num', 'quantmod', 'poss']
     arg_expand_non_nnp_list = ['infmod', 'partmod', 'ref', 'prepc_of'] #'rcmod' -> it's alwasys connected to nsubj
-    rel_expand_list = ['advmod', 'mod', 'aux', 'auxpass', 'cop', 'prt','neg']
+    rel_expand_list = ['advmod', 'mod', 'aux', 'auxpass', 'cop', 'prt','neg', 'poss']
     rel_expand_non_SVO_list = ['dobj', 'iobj']
     
     arguments_names = ['arg1', 'arg2']
@@ -91,7 +139,8 @@ def expand_rel(rel, g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS):
     v_rel_id = r
     rel_extra_ids.append(v_rel_id)
     rel_head_ind = word_id_get_index(v_rel_id)
-    if rel["type"] != "SVO":
+    if "SVO" not in rel["type"]:
+    #if rel["type"] != "SVO":
         rel_expand_list_final = rel_expand_list + rel_expand_non_SVO_list
     else:
         rel_expand_list_final = rel_expand_list
@@ -125,7 +174,7 @@ def expand_rel(rel, g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS):
     
 
     if EXTRACT_NESTED_PREPOSITIONS_RELS:
-        expansion_list = arg_expand_list
+        expansion_list = arg_expand_list # is it correct? how about get_expansion_list?
         rel_expanded['rel_prepositions'] = get_nested_preposition_rels(g_dir, r, expansion_list)
         rel_expanded['arg1_prepositions'] = get_nested_preposition_rels(g_dir, arg1, expansion_list)
         rel_expanded['arg2_prepositions'] = get_nested_preposition_rels(g_dir, arg2, expansion_list)
@@ -284,7 +333,155 @@ def get_simp_rel(rel, option = "SVO", dataset='mothering'):
     rel_simp['rel'] = r
     return rel_simp
 
+def get_conj_and_rels(rel, rel_expanded, g_dir, annotation):
+    rel_updated = defaultdict(list)
+    rel_updated = rel.copy()
+    list_conj_and_rels = []
+    list_conj_and_rels_simp = []
+    field_names = ["arg1", "arg2", "rel"]
+    arg_expansion_list = get_expansion_list(rel["arg1"], "arg", "SVO")
+    for field in field_names:
+        main_word_id = rel[field]  
+        g_dir_v = None
+        try:
+            g_dir_v = g_dir[main_word_id]
+        except:
+            print "Faild to get adjacency network of ", main_word_id, " while expanding it."
+        if g_dir_v is not None:
+            for word_id, e in g_dir_v.iteritems():
+                if "conj_and" in e["rel"]:
+                    has_own_obj = False
+                    has_own_subj = False
+                    obj_id = -1
+                    single_nested_rel = defaultdict(list)
+                    single_nested_rel = rel_expanded.copy()
+                    #print "conj_and relation"
+                    #print single_nested_rel                 
+                    single_nested_rel_ids = []
+                    single_nested_rel_ids.append(word_id)
+                    #reason: type of preposition
+                    single_nested_rel["type"] = rel_expanded["type"]+"_conj_and_"+field
+                    nested_rel_head_id = word_id
+                    nested_rel_head_ind = word_id_get_index(word_id)
 
+                    g_dir_v_nested = None
+                    res_expanded_conj_and_obj = []
+                    #rel_updated[field] = nested_rel_head_ind
+                    rel_updated[field] = nested_rel_head_id
+                    try:
+                        g_dir_v_nested = g_dir[nested_rel_head_id]
+                    except:
+                        print "Faild to get adjacency network of ", nested_rel_head_id, " while extracting nested relations."
+                    if "arg" in field:
+                        expansion_list = get_expansion_list(nested_rel_head_id, "arg", "SVO")
+                    if "rel" == field:
+                        t_verbs = annotation['verbs']
+                        v_ids = []
+                        for v in t_verbs:
+                            v_id = word_to_node_id(v,annotation)
+                            v_ids.append(v_id)
+                        if nested_rel_head_id not in v_ids:
+                            continue
+                        expansion_list = get_expansion_list(nested_rel_head_id, "rel", "SVO")
+                    for word_id_nested, e_nested in g_dir_v_nested.iteritems():
+                        if "rel" == field:
+                            if e_nested["rel"] == "nsubj":
+                                has_own_subj = True
+                            if e_nested["rel"] == "dobj":
+                                has_own_obj = True
+                                obj_id = word_id_nested 
+                                rel_updated["arg2"] = word_id_nested
+                        if e_nested["rel"] in expansion_list:
+                            single_nested_rel_ids.append(word_id_nested)
+                    nested_rel_final_word_str, nested_rel_final_with_pos_str = sort_word_ids(single_nested_rel_ids, nested_rel_head_ind)
+                    #print "nested rel : ", nested_rel_final_word_str
+                    #single_nested_rel["text"] = nested_rel_final_word_str
+                    
+                    single_nested_rel[field] = nested_rel_final_word_str
+                    
+                    if has_own_obj and has_own_subj:
+                        continue
+                    
+                    if has_own_obj :
+                        res_expanded_conj_and_obj = expand_node_id(obj_id, g_dir, node_type="arg",
+                                                                   rel_type="SVO",EXTRACT_NESTED_PREPOSITIONS_RELS=False)
+
+                        single_nested_rel["type"] += "_dobj"
+                        single_nested_rel["arg2"] = res_expanded_conj_and_obj["final_word_str"]
+                        single_nested_rel["arg2_with_pos"] = res_expanded_conj_and_obj["final_word_with_pos_str"] 
+                        single_nested_rel["rel_prepositions"] = res_expanded_conj_and_obj["rel_prepositions"]
+                        expansion_list = get_expansion_list(obj_id, "arg", "SVO")
+                        single_nested_rel["arg2_prepositions"] = get_nested_preposition_rels(g_dir, 
+                                                                                             obj_id, 
+                                                                                             expansion_list)
+                        
+                        
+                    single_nested_rel['rel_prepositions'] = get_nested_preposition_rels(g_dir, rel_updated["rel"], arg_expansion_list)
+                    single_nested_rel['arg1_prepositions'] = get_nested_preposition_rels(g_dir, rel_updated["arg1"], arg_expansion_list)
+                    single_nested_rel['arg2_prepositions'] = get_nested_preposition_rels(g_dir, rel_updated["arg2"], arg_expansion_list)
+                    
+                    list_conj_and_rels.append(single_nested_rel)
+                    
+                    single_nested_rel_simp = get_simp_rel(single_nested_rel.copy(),option="SVO")
+                    list_conj_and_rels_simp.append(single_nested_rel_simp)
+                    #get svp relations
+                    list_svp_rels, list_svp_rels_simp = get_svp_rels(single_nested_rel.copy())
+                    list_conj_and_rels += list_svp_rels
+                    list_conj_and_rels_simp += list_svp_rels_simp                            
+           
+    #nested_rels_str = ""
+    #for item in nested_rels:
+    #    nested_rels_str += "REASON: " + item["reason"] + " TEXT: " + item["text"] + " -- "
+    #nested_rels_str.strip()    
+    return list_conj_and_rels, list_conj_and_rels_simp
+
+## TODO: Instead of parsing the output string, we should extract these rels from the original dep tree.
+def parse_rel_prepositions(rel_prep):
+    res = []
+    res_entry = defaultdict(list)
+    prepositions = rel_prep.split("--")
+    for p in prepositions:
+        p = p.strip()
+        if p:
+            res_entry = {}
+            p = p.strip()
+            m = re.search('REASON:(.+?)TEXT:', p)
+            if m:
+                found = m.group(1).strip()
+                found = found.split("_")[1:]
+                prep_str = ""
+                for i in found:
+                    prep_str += i + " "
+
+                prep_str = prep_str.strip()
+                res_entry["prep"] = prep_str
+                
+            m = re.search('TEXT:(.*)$', p)
+            if m:
+                found = m.group(1).strip()
+                res_entry["text"] = found              
+            res.append(res_entry)
+            
+    return res
+
+def get_svp_rels(rel_expanded):
+    list_rels_with_svp = []
+    list_rels_with_svp_simp = []    
+    if rel_expanded["rel_prepositions"]:
+        prepositions = parse_rel_prepositions(rel_expanded["rel_prepositions"])
+        for p in prepositions:
+            new_row = rel_expanded.copy()
+            new_row["type"] = "SV(O)P"
+            new_row["pattern"] = "(nsubj, verb, (O)prep)"
+            new_row["rel"] = rel_expanded["rel"] + " <<" + rel_expanded["arg2"] + ">> " + p["prep"]
+            new_row["arg2"] = p["text"]
+            new_row["arg2_with_pos"] = ''
+            new_row["rel_prepositions"] = ''
+            list_rels_with_svp.append(new_row)
+            new_row_simp = get_simp_rel(new_row.copy(),option="SVO")
+            list_rels_with_svp_simp.append(new_row_simp)
+            
+    return list_rels_with_svp, list_rels_with_svp_simp
 
 def get_relations(g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS, option="SVO"):
     relations = []
@@ -318,11 +515,23 @@ def get_relations(g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS, option="S
                         rel["arg2"] = o#o.split("-")[0]
                         rel["type"] = option
                         rel["pattern"] = "(nsubj, verb, dobj)"
-                        rel_expanded = expand_rel(rel, g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS)
+                        rel_expanded = expand_rel(rel.copy(), g_dir, EXTRACT_NESTED_PREPOSITIONS_RELS)
                         #print rel_expanded
                         relations.append(rel_expanded.copy())
                         rel_simp = get_simp_rel(rel_expanded.copy(),option)
                         relations_simp.append(rel_simp)
+                        
+                        list_conj_and_rels, list_conj_and_rels_simp = get_conj_and_rels(rel.copy(), 
+                                                                                        rel_expanded.copy(), g_dir, annotation)
+                        
+                        relations += list_conj_and_rels
+                        relations_simp += list_conj_and_rels_simp
+                        
+                        list_svp_rels, list_svp_rels_simp = get_svp_rels(rel_expanded.copy())
+                        
+                        relations += list_svp_rels
+                        relations_simp += list_svp_rels_simp
+                        
     return relations, relations_simp
 
 def create_argument_graph(df, source, target, edge_attr=None, graph_type="directed"):
@@ -396,12 +605,13 @@ def filter_nodes_OR(df,source,target, selected_nodes):
     df_filtered = df[np.logical_or(df[source].isin(selected_nodes), df[target].isin(selected_nodes))]
     return df_filtered
 
+'''
 def glob_version(entity, entity_versions):
-    '''
-    Extraction part -> arg or rel
-    Take an argument or relation entry, with a list of the main actors and different versions of the main actors.
-    Return the global name for the main actor.
-    '''
+
+    #Extraction part -> arg or rel
+    #Take an argument or relation entry, with a list of the main actors and different versions of the main actors.
+    #Return the global name for the main actor.
+    
     entity_new = ""
     entity_new = entity
     entity_new = entity_new.lower()
@@ -411,6 +621,72 @@ def glob_version(entity, entity_versions):
             entity_new = ent_glob_name
             break
     return entity_new
+'''    
+    
+def glob_version(entity, entity_versions):
+    '''
+    Extraction part -> arg or rel
+    Take an argument (or relation entry), with a list of the main actors and different versions of the main actors.
+    Return the global name for the main actor.
+    1. We compare entity versions (and even each of their words if they have multiple parts) with the head word of an argument. 
+    We map the representation of the longest entity version that part of it matches with the head word.
+    2. If non of the entity versions matches with the head word, we remove {}s, 
+    and map the longest entity version that is in the argument.
+
+    Ex...
+    #ent = "{apple} pay"
+    #entv = {"apple":["apple"],"apple pay":["apple pay"]}
+    res -> apple pay
+    #ent = "second {creature}"
+    #entv = {"creature":['creature'], "2nd creature":["second creature"]}
+    res -> 2nd creature
+    '''
+    entity_new = ""
+    entity_new = entity
+    entity_new = entity_new.lower()
+    entity_head = re.search(r'\{(.*)\}', entity_new).group(1)
+    entv_max_len = 0
+    flag_head_matches = False
+    entity_no_bracket = entity_new.replace("{","").replace("}","")
+    #iterate through the dictionary
+    for ent_glob_name, ent_version_list in entity_versions.iteritems():
+        #iterate through each of the entity version lists
+        for entv_item in ent_version_list:
+            #separate each entity version into separate words
+            entv_item_words = entv_item.split(" ")
+            #if head word matches any of the words and the complete entity version is in the argument, then we have a match
+            if entity_head in entv_item_words:
+                if entv_item in entity_no_bracket:
+                    flag_head_matches = True
+                    #we find all the matches and return the representation of the longest entity version.
+                    if len(entv_item) > entv_max_len:
+                        entv_max_len = len(entv_item)
+                        entity_new = ent_glob_name
+                    
+    # if head noun does not matche, then find the longest entity version in the 
+    if not flag_head_matches:
+        entv_max_len = 0
+        for ent_glob_name, ent_version_list in entity_versions.iteritems():
+            for entv_item in ent_version_list:
+                if entv_item in entity_no_bracket:
+                    entv_item_as_separate_words = False
+                    # if it appears as separate words inside the text
+                    if (" " + entv_item + " ") in entity_no_bracket:
+                        entv_item_as_separate_words = True
+                    # if it appears as separate words at first
+                    if not entv_item_as_separate_words: 
+                        ind_first_match = entity_no_bracket.find(entv_item+" ")
+                        if ind_first_match == 0:
+                            entv_item_as_separate_words = True
+                    # if it appears as separate words at the end
+                    if not entv_item_as_separate_words:
+                        ind_last_match = entity_no_bracket.rfind(" "+entv_item)
+                        if ind_last_match + len(entv_item) + 1 == len(entity_no_bracket):
+                            entv_item_as_separate_words = True
+                    if entv_item_as_separate_words and len(entv_item) > entv_max_len:
+                        entv_max_len = len(entv_item)
+                        entity_new = ent_glob_name
+    return entity_new    
     
 def get_simp_df(df,entity_versions):
     for index, row in df.iterrows():
@@ -442,7 +718,10 @@ def text_corpus_to_rels(file_input_arg,
                        ):
     
     df = read_data(file_input_arg, DATA_SET, INPUT_DELIMITER, LOAD_ANNOTATIONS)
-    texts = df['text'].tolist()
+    text_col_name = 'text'
+    if 'text' not in df.columns:
+        text_col_name = 'sentence'
+    texts = df[text_col_name].tolist()
     
     output_prefix = output_dir_arg + input_fname
     f_rel = open(output_prefix +"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
@@ -500,6 +779,7 @@ def text_corpus_to_rels(file_input_arg,
                 print "Unexpected error while extracting relations:", sys.exc_info()[0]
                 continue
             rels_pure, rels_simp = get_relations(g_dir, t_annotated, EXTRACT_NESTED_PREPOSITIONS_RELS, option="SVO")
+            print rels_pure
             rels = rels_pure#rels_simp
             if SHOW_REL_EXTRACTIONS:
                 print ind, t, "\n"
