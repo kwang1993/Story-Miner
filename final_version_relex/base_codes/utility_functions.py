@@ -483,6 +483,7 @@ def clean_sent(sent):
             2. Replace - with .
             3. Remove punctuations - except ".",",",";", "!", "?", "'".
             4. Change n't to not
+            5. Change multidots to a single dot - Example: ... -> .
     '''
     
     #sent = sent.encode('utf-8')
