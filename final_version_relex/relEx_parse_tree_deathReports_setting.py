@@ -16,7 +16,7 @@ CLEAN_SENTENCES = False
 SHOW_DP_PLOTS = False
 SHOW_REL_EXTRACTIONS = False
 NODE_SELECTION = False
-MAX_ITERATION = 3 #-1 -> to try all
+MAX_ITERATION = 20 #-1 -> to try all
 SAVE_GEFX = False
 SAVE_G_JSON = False
 SAVE_PAIRWISE_RELS = False
@@ -24,11 +24,12 @@ SAVE_ALL_RELS = False
 SET_INOUT_LOC_FROM_PYTHON_ARGS = True 
 SHOW_ARGUMENT_GRAPH = False
 EXTRACT_NESTED_PREPOSITIONS_RELS = True 
-DATA_SET = "goodreads"
-INPUT_DELIMITER = "\n"
+DATA_SET = "deathreports"
+INPUT_DELIMITER = ","
 SAVE_ANNOTATIONS_TO_FILE = True
 LOAD_ANNOTATIONS = False 
-KEEP_ORDER_OF_EXTRACTIONS = True 
+KEEP_ORDER_OF_EXTRACTIONS = False
+PRINT_EXCEPTION_ERRORS = False #U still need to uncomment some of the error messages if u want to see all the exception errors.
 
 
 
@@ -78,7 +79,8 @@ all_rels_str, all_rels, output = text_corpus_to_rels(file_input_arg,
                                                      EXTRACT_NESTED_PREPOSITIONS_RELS,
                                                      SAVE_ANNOTATIONS_TO_FILE,
                                                      LOAD_ANNOTATIONS,
-                                                     KEEP_ORDER_OF_EXTRACTIONS
+                                                     KEEP_ORDER_OF_EXTRACTIONS,
+                                                     PRINT_EXCEPTION_ERRORS
                                                     )            
 end_time = time.time()
 print "Relation Extraction Time: ", end_time-start_time , "(seconds) - ", (end_time-start_time)/60, "(min)"

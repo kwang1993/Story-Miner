@@ -71,7 +71,7 @@ def expand_node_id(node_id, g_dir, node_type="arg", rel_type="SVO",EXTRACT_NESTE
     try:
         g_dir_v = g_dir[node_id]
     except:
-        print "Faild to get adjacency network of ", node_id, " while expanding it."
+        ##print "Faild to get adjacency network of ", node_id, " while expanding it."
         return
     for word_id, e in g_dir_v.iteritems():
         if e["rel"] in expansion_list:
@@ -126,7 +126,7 @@ def expand_rel(rel, g_dir, EXTRACT_NESTED_PREPOSITIONS_RELS):
         try:
             g_dir_v = g_dir[v_arg_id]
         except:
-            print "Faild to get adjacency network of ", v_arg_id, " while expanding it."
+            ##print "Faild to get adjacency network of ", v_arg_id, " while expanding it."
             continue
         for word_id, e in g_dir_v.iteritems():
             if e["rel"] in arg_expand_list_final:
@@ -148,7 +148,8 @@ def expand_rel(rel, g_dir, EXTRACT_NESTED_PREPOSITIONS_RELS):
     try:
         g_dir_v = g_dir[v_rel_id]
     except:
-        print "Faild to get adjacency network of ", v_rel_id, " while expanding it."
+        pass
+        ##print "Faild to get adjacency network of ", v_rel_id, " while expanding it."
     if g_dir_v is not None:
         for word_id, e in g_dir_v.iteritems():
             if e["rel"] in rel_expand_list_final:
@@ -208,7 +209,8 @@ def get_nested_preposition_rels(g_dir, main_word_id, expansion_list):
                 try:
                     g_dir_v_nested = g_dir[nested_rel_head_id]
                 except:
-                    print "Faild to get adjacency network of ", nested_rel_head_id, " while extracting nested relations."
+                    pass
+                    #print "Faild to get adjacency network of ", nested_rel_head_id, " while extracting nested relations."
                 
                 for word_id_nested, e_nested in g_dir_v_nested.iteritems():
                     if e_nested["rel"] in expansion_list:
@@ -371,7 +373,8 @@ def get_conj_and_rels(rel, rel_expanded, g_dir, annotation):
                     try:
                         g_dir_v_nested = g_dir[nested_rel_head_id]
                     except:
-                        print "Faild to get adjacency network of ", nested_rel_head_id, " while extracting nested relations."
+                        pass
+                        ##print "Faild to get adjacency network of ", nested_rel_head_id, " while extracting nested relations."
                     if "arg" in field:
                         expansion_list = get_expansion_list(nested_rel_head_id, "arg", "SVO")
                     if "rel" == field:
@@ -497,7 +500,7 @@ def get_relations(g_dir, annotation, EXTRACT_NESTED_PREPOSITIONS_RELS, option="S
             try:
                 g_dir_v = g_dir[v_id] #adjacency of v_id
             except:
-                print v_id, " does not appeared as a separate node in parsing tree."
+                ##print v_id, " does not appeared as a separate node in parsing tree."
                 continue
             nsubj_list = []
             dobj_list = []
@@ -714,7 +717,8 @@ def text_corpus_to_rels(file_input_arg,
                         EXTRACT_NESTED_PREPOSITIONS_RELS,
                         SAVE_ANNOTATIONS_TO_FILE,
                         LOAD_ANNOTATIONS,
-                        KEEP_ORDER_OF_EXTRACTIONS
+                        KEEP_ORDER_OF_EXTRACTIONS,
+                        PRINT_EXCEPTION_ERRORS
                        ):
     
     df = read_data(file_input_arg, DATA_SET, INPUT_DELIMITER, LOAD_ANNOTATIONS)
@@ -735,6 +739,8 @@ def text_corpus_to_rels(file_input_arg,
         header = ["post_num", "sentence_num"] + header
     if DATA_SET=="twitter":
         header = df.columns.values.tolist() + header
+    if DATA_SET == "deathreports":
+        header = df.columns.values.tolist() + header#[h for h in header if h not in ["sentence"]]
     dict_writer = csv.DictWriter(f_rel, header)
     dict_writer.writeheader()#writerow(header)    
     
@@ -755,7 +761,8 @@ def text_corpus_to_rels(file_input_arg,
             else:
                 t_sentences = [t_orig]
         except:
-            print "Error in sentence tokenizer! - ", t_orig
+            if PRINT_EXCEPTION_ERRORS:
+                print "Error in sentence tokenizer! - ", t_orig
         for t_ind, t in enumerate(t_sentences):
             try:
                 if LOAD_ANNOTATIONS:
@@ -764,22 +771,25 @@ def text_corpus_to_rels(file_input_arg,
                 else:
                     t_annotated = annotator.getAnnotations(t, dep_parse=True)
             except:
-                print "Error in sentence annotation"
+                if PRINT_EXCEPTION_ERRORS:
+                    print "Error in sentence annotation"
                 continue
             try:
                 #print type(t_annotated)
                 g_dir = create_dep_graph(t_annotated)
                 if g_dir is None:
-                    print "No extraction found"
+                    if PRINT_EXCEPTION_ERRORS:
+                        print "No extraction found"
                     continue
                 if SHOW_DP_PLOTS:
                     plot_dep(g_dir,t)
                 g_undir = g_dir.to_undirected()
             except:
-                print "Unexpected error while extracting relations:", sys.exc_info()[0]
+                if PRINT_EXCEPTION_ERRORS:
+                    print "Unexpected error while extracting relations:", sys.exc_info()[0]
                 continue
             rels_pure, rels_simp = get_relations(g_dir, t_annotated, EXTRACT_NESTED_PREPOSITIONS_RELS, option="SVO")
-            print rels_pure
+            #print rels_pure
             rels = rels_pure#rels_simp
             if SHOW_REL_EXTRACTIONS:
                 print ind, t, "\n"
@@ -788,7 +798,8 @@ def text_corpus_to_rels(file_input_arg,
                 print "More detailed Version:"
                 print_relations(rels_pure)
             else:
-                print ind,
+                if ind % 1000 == 0:
+                    print ind,
             all_rels_str = all_rels_str + get_rels_str(rels) #For simply counting the exact strings
             all_rels = all_rels + rels # to later create a dataframe
             for r in rels:
@@ -804,7 +815,7 @@ def text_corpus_to_rels(file_input_arg,
                 output.append(output_row)
                 #print " output is : ", output
                 #output_subset = dict((k,output[k]) for k in header)
-                if DATA_SET=="twitter":
+                if DATA_SET == "twitter" or DATA_SET == "deathreports":
                     #print "-------------------------df.iloc[[ind]]-------------------------"
                     #print df.iloc[[ind]]
                     d_orig = df.iloc[[ind]].to_dict(orient='records')#dict(df.iloc[[ind]].)
@@ -814,6 +825,8 @@ def text_corpus_to_rels(file_input_arg,
                     #d_final.update(output_row)
                     output_row.update(d_orig[0])
                     #print output_row
+                   
+                #if DATA_SET == "deathreports":
                     
                 dict_writer.writerow(output_row)
                 
