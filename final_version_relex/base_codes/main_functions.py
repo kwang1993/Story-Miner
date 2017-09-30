@@ -718,14 +718,17 @@ def text_corpus_to_rels(file_input_arg,
                         SAVE_ANNOTATIONS_TO_FILE,
                         LOAD_ANNOTATIONS,
                         KEEP_ORDER_OF_EXTRACTIONS,
-                        PRINT_EXCEPTION_ERRORS
+                        PRINT_EXCEPTION_ERRORS,
+                        texts = [],
+                        entity_versions = None
+                        
                        ):
-    
-    df = read_data(file_input_arg, DATA_SET, INPUT_DELIMITER, LOAD_ANNOTATIONS)
-    text_col_name = 'text'
-    if 'text' not in df.columns:
-        text_col_name = 'sentence'
-    texts = df[text_col_name].tolist()
+    if not texts:
+        df = read_data(file_input_arg, DATA_SET, INPUT_DELIMITER, LOAD_ANNOTATIONS)
+        text_col_name = 'text'
+        if 'text' not in df.columns:
+            text_col_name = 'sentence'
+        texts = df[text_col_name].tolist()
     
     output_prefix = output_dir_arg + input_fname
     f_rel = open(output_prefix +"_"+"relations_" + str(MAX_ITERATION) +".csv", "w")
@@ -849,11 +852,13 @@ def rels_to_network(df_rels,
                     SAVE_PAIRWISE_RELS,
                     SHOW_ARGUMENT_GRAPH,
                     SAVE_G_JSON,
-                    SAVE_DF_SELECTED):
+                    SAVE_DF_SELECTED,
+                    entity_versions = None):
     
     if NODE_SELECTION:
         # get the list of different versions of an entity. Example : parents,parent,i,we -> parents
-        entity_versions = get_entity_versions(DATA_SET)
+        if not entity_versions:
+            entity_versions = get_entity_versions(DATA_SET)
         df_simp = get_simp_df(df_rels.copy(),entity_versions)  
         selected_nodes = entity_versions.keys()
         df_rels_selected = filter_nodes(df_simp.copy(),source='arg1',target='arg2',selected_nodes = selected_nodes)
@@ -885,4 +890,4 @@ def rels_to_network(df_rels,
         if SAVE_PAIRWISE_RELS:
             file_loc = output_dir_arg + input_fname + "_"  + "pairwise_rels_"+str(MAX_ITERATION)+"_"+DATA_SET+".txt"
             save_pairwise_rels(file_loc,g_arg,print_option=True)  
-
+    return g_arg
